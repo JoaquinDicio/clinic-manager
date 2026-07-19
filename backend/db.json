@@ -1,0 +1,195 @@
+{
+  "clients": [
+    {
+      "id": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+      "name": "Joaquin (Yo)",
+      "phone": "5491126655209",
+      "createdAt": "2026-04-29T15:12:04.946Z"
+    },
+    {
+      "id": "18876030-52ef-480e-894b-8d1b0768ea62",
+      "name": "Nahiara Perera",
+      "phone": "5491138277169",
+      "createdAt": "2026-05-03T21:09:30.286Z"
+    }
+  ],
+  "templates": [
+    {
+      "id": "5af08270-2482-42a4-a46c-655a134fb9ea",
+      "name": "Saludo con fecha",
+      "body": "Hola! Este es un saludo programado en la fecha: {{fechaSaludo}}.",
+      "variables": [
+        "fechaSaludo"
+      ],
+      "createdAt": "2026-04-29T15:20:56.536Z"
+    },
+    {
+      "id": "4f3f6138-caae-4729-b64b-5eda9426de8b",
+      "name": "Recordatorio de turno",
+      "body": "Hola {{nombre}}. Te recordamos que tenés un turno el día {{fecha}} a las {{hora}}. ¡Te esperamos!",
+      "variables": [
+        "fecha",
+        "hora"
+      ],
+      "createdAt": "2026-05-02T03:42:58.569Z"
+    }
+  ],
+  "schedules": [
+    {
+      "id": "62f2f764-e164-423c-8fc2-ce37bc692b63",
+      "templateId": "5af08270-2482-42a4-a46c-655a134fb9ea",
+      "sendAt": "2026-04-29T12:45:00.000Z",
+      "recipients": [
+        {
+          "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+          "variables": {
+            "fechaSaludo": "29/04/2026"
+          }
+        }
+      ],
+      "status": "sent"
+    },
+    {
+      "id": "d5fbc0ac-201d-4550-846e-23f15717e676",
+      "templateId": "5af08270-2482-42a4-a46c-655a134fb9ea",
+      "sendAt": "2026-04-29T12:50:00.000Z",
+      "recipients": [
+        {
+          "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+          "variables": {
+            "fechaSaludo": "29/04/2026"
+          }
+        }
+      ],
+      "status": "sent"
+    },
+    {
+      "id": "ce0672eb-eb6d-49ec-b655-cff6c940389b",
+      "templateId": "5af08270-2482-42a4-a46c-655a134fb9ea",
+      "sendAt": "2026-04-29T12:50:00.000Z",
+      "recipients": [
+        {
+          "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+          "variables": {
+            "fechaSaludo": "29/04/2026"
+          }
+        }
+      ],
+      "status": "sent"
+    },
+    {
+      "id": "8ec1fb25-506c-4ba5-a8c4-1d560b0e11c6",
+      "templateId": "5af08270-2482-42a4-a46c-655a134fb9ea",
+      "sendAt": "2026-04-29T12:55:00.000Z",
+      "recipients": [
+        {
+          "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+          "variables": {
+            "fechaSaludo": "29/04/2026"
+          }
+        }
+      ],
+      "status": "sent"
+    },
+    {
+      "id": "b99475be-e119-4997-927d-c83d383756d5",
+      "templateId": "5af08270-2482-42a4-a46c-655a134fb9ea",
+      "sendAt": "2026-04-29T12:55:00.000Z",
+      "recipients": [
+        {
+          "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+          "variables": {
+            "fechaSaludo": "29/04/2026"
+          }
+        }
+      ],
+      "status": "sent"
+    },
+    {
+      "id": "181b39e2-5d9a-41bb-86ad-1e73cf763faa",
+      "templateId": "4f3f6138-caae-4729-b64b-5eda9426de8b",
+      "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+      "sendAt": "2026-05-02T04:20:00.000Z",
+      "variables": {
+        "fecha": "2026-05-03",
+        "hora": "01:20"
+      },
+      "status": "sent"
+    },
+    {
+      "id": "c97c57f7-b010-4a53-b9ad-b46d0b050f5d",
+      "templateId": "4f3f6138-caae-4729-b64b-5eda9426de8b",
+      "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+      "sendAt": "2026-05-03T20:52:00.000Z",
+      "variables": {
+        "fecha": "2026-05-04",
+        "hora": "17:52"
+      },
+      "status": "sent"
+    },
+    {
+      "id": "a8bee8b6-802c-4323-ab86-2309440e8f99",
+      "templateId": "4f3f6138-caae-4729-b64b-5eda9426de8b",
+      "clientId": "18876030-52ef-480e-894b-8d1b0768ea62",
+      "sendAt": "2026-05-03T21:15:00.000Z",
+      "variables": {
+        "fecha": "2026-05-04",
+        "hora": "18:15"
+      },
+      "status": "sent"
+    },
+    {
+      "id": "433a7bd1-8051-4870-96c3-7d50de9c7bbe",
+      "templateId": "4f3f6138-caae-4729-b64b-5eda9426de8b",
+      "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+      "sendAt": "2026-05-03T21:15:00.000Z",
+      "variables": {
+        "fecha": "2026-05-04",
+        "hora": "18:15"
+      },
+      "status": "sent"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "02436097-194e-445b-b01f-1082bef544e9",
+      "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+      "date": "2026-05-03",
+      "time": "00:57",
+      "reminder": true,
+      "createdAt": "2026-05-02T04:18:16.626Z"
+    },
+    {
+      "id": "947dcb30-80a3-49db-a831-72ee34416def",
+      "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+      "date": "2026-05-03",
+      "time": "01:20",
+      "reminder": true,
+      "createdAt": "2026-05-02T04:18:35.297Z"
+    },
+    {
+      "id": "75e8760c-18c9-4613-b2ac-a5611d4ee7f2",
+      "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+      "date": "2026-05-04",
+      "time": "17:52",
+      "reminder": true,
+      "createdAt": "2026-05-03T20:51:52.992Z"
+    },
+    {
+      "id": "5010e430-ad77-44b3-b8ba-04d7b967b283",
+      "clientId": "18876030-52ef-480e-894b-8d1b0768ea62",
+      "date": "2026-05-04",
+      "time": "18:15",
+      "reminder": true,
+      "createdAt": "2026-05-03T21:10:02.164Z"
+    },
+    {
+      "id": "8053e7ae-9726-4c46-afb7-b0064630622a",
+      "clientId": "19ca0227-2607-40f1-b11d-c3a607a3a163",
+      "date": "2026-05-04",
+      "time": "18:15",
+      "reminder": true,
+      "createdAt": "2026-05-03T21:11:07.530Z"
+    }
+  ]
+}
