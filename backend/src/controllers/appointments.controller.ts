@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { AppError } from "../middlewares/errorMiddleware.js"
-import { AppointmentDTO } from "../types/appointments.types.js"
 import appointmentsService from "../services/appointments.service.js"
+import { CreateAppointmentDTO, CreateAppointmentSchema } from "../validators/appointment.validator.js"
 
 const appointmentsController = {
 
@@ -14,29 +14,13 @@ const appointmentsController = {
 
     async create(req: Request, res: Response) {
 
-        console.log('DATA/////', req.body)
+        const result = CreateAppointmentSchema.safeParse(req.body);
 
-        const data: AppointmentDTO = req.body
-
-        const requiredStrings: (keyof AppointmentDTO)[] = ['clientId', 'date', 'time']
-
-        requiredStrings.forEach((field) => {
-            const value = data[field]
-
-            if (typeof value !== "string" || !value.trim()) {
-                throw new AppError(400, `Field ${field} is mandatory to send this request.`)
-            }
-        })
-
-        if (typeof data.slots !== "number" || data.slots <= 0) {
-            throw new AppError(400, "Slots must be a positive number")
+        if (!result.success) {
+            throw new AppError(400, result.error.issues[0].message)
         }
 
-        if (typeof data.reminder !== "boolean") {
-            throw new AppError(400, "Reminder must be boolean")
-        }
-
-        const response = await appointmentsService.create(data)
+        const response = await appointmentsService.create({ ...result.data })
 
         res.status(201).json(response)
     },
