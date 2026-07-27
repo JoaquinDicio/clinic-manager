@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import clientsService from "../services/clients.service.js"
 import { ClientDTO } from "../types/clients.types.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
-
+import { CreateClientDTO, CreateClientSchema } from "../validators/client.validator.js"
 
 const clientsController = {
 
@@ -16,17 +16,13 @@ const clientsController = {
 
     async create(req: Request, res: Response) {
 
-        const { name, phone }: ClientDTO = req.body
+        const result = CreateClientSchema.safeParse(req.body);
 
-        if (!name?.trim() || !phone?.trim()) {
-            throw new AppError(400, "Name and Phone are required fields")
+        if (!result.success) {
+            throw new AppError(400, result.error.issues[0].message)
         }
 
-        if (typeof phone !== "string" || typeof name !== 'string') {
-            throw new AppError(400, 'Phone and Name must be the type string.')
-        }
-
-        const response = await clientsService.create({ name, phone })
+        const response = await clientsService.create({ ...result.data } as CreateClientDTO)
 
         res.status(201).json(response)
 

@@ -19,7 +19,9 @@
         "node-cron": "^4.2.1",
         "pg": "^8.20.0",
         "qrcode-terminal": "^0.12.0",
-        "whatsapp-web.js": "^1.34.6"
+        "whatsapp-web.js": "^1.34.6",
+        "xod": "^1.11.3",
+        "zod": "^4.4.3"
     },
     "devDependencies": {
         "@types/cors": "^2.8.19",
