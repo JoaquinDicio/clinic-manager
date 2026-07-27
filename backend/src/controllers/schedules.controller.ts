@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import schedulesService from "../services/schedules.service.js"
-import { ScheduleDTO } from "../types/schedules.types.js"
+import { CreateScheduleDTO } from "../validators/schedule.validator.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
 
 const schedulesController = {
@@ -12,7 +12,7 @@ const schedulesController = {
 
     async create(req: Request, res: Response) {
 
-        const { templateId, sendAt, clientId, variables }: ScheduleDTO = req.body
+        const { templateId, sendAt, clientId, variables }: CreateScheduleDTO = req.body
 
         if (!templateId?.trim() || !sendAt?.trim() || !clientId?.trim()) {
             throw new AppError(400, "templateId, sendAt and clientId are required fields")

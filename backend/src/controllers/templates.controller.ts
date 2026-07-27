@@ -1,8 +1,7 @@
 import { Request, Response } from "express"
 import templatesService from "../services/templates.service.js"
-import { TemplateDTO } from "../types/templates.types.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
-import { CreateTemplateSchema } from "../validators/template.validator.js"
+import { CreateTemplateSchema, CreateTemplateDTO } from "../validators/template.validator.js"
 
 const templatesController = {
 
@@ -24,7 +23,7 @@ const templatesController = {
 
     async update(req: Request, res: Response) {
         const id = req.params.id as string
-        const { name, body, variables }: TemplateDTO = req.body
+        const { name, body, variables }: CreateTemplateDTO = req.body
 
         const response = await templatesService.update({ name, body, variables }, id)
         res.status(200).json(response)

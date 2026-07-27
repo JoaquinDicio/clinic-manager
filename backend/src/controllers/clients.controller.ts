@@ -1,8 +1,7 @@
 import { Request, Response } from "express"
 import clientsService from "../services/clients.service.js"
-import { ClientDTO } from "../types/clients.types.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
-import { CreateClientSchema } from "../validators/client.validator.js"
+import { CreateClientSchema, CreateClientDTO } from "../validators/client.validator.js"
 
 const clientsController = {
 
@@ -30,7 +29,7 @@ const clientsController = {
 
     async update(req: Request, res: Response) {
 
-        const { name, phone }: ClientDTO = req.body
+        const { name, phone }: CreateClientDTO = req.body
 
         const id = req.params.id as string
 

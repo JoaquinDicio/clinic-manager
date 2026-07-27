@@ -1,4 +1,4 @@
-import { ClientDTO } from "../types/clients.types.js"
+import { CreateClientDTO } from "../validators/client.validator.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
 import { pool } from "../db/connection.js"
 
@@ -23,7 +23,7 @@ const clientsService = {
 
     },
 
-    async create(data: ClientDTO): Promise<Client> {
+    async create(data: CreateClientDTO): Promise<Client> {
 
         const result = await pool.query(
             `INSERT INTO clients (name, phone) VALUES ($1, $2) RETURNING *`,
@@ -33,7 +33,7 @@ const clientsService = {
         return result.rows[0]
     },
 
-    async update(newData: ClientDTO, id: string): Promise<Client> {
+    async update(newData: CreateClientDTO, id: string): Promise<Client> {
 
         const result = await pool.query(
             `

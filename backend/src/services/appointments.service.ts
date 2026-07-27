@@ -1,8 +1,7 @@
-import { AppointmentDTO } from "../types/appointments.types.js"
 import schedulesService from "./schedules.service.js"
 import { Appointment } from "../db/db.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
-import crypto from "crypto"
+import { CreateAppointmentDTO } from "../validators/appointment.validator.js"
 import { pool } from "../db/connection.js"
 
 const appointmentsService = {
@@ -12,7 +11,7 @@ const appointmentsService = {
         return result.rows
     },
 
-    async create(data: AppointmentDTO): Promise<Appointment> {
+    async create(data: CreateAppointmentDTO): Promise<Appointment> {
 
         const { clientId, date, time, reminder, slots } = data
 
@@ -69,7 +68,7 @@ const appointmentsService = {
         return newAppointment
     },
 
-    async update(newData: AppointmentDTO, id: string): Promise<Appointment> {
+    async update(newData: CreateAppointmentDTO, id: string): Promise<Appointment> {
 
         const { clientId, date, time, reminder } = newData
 

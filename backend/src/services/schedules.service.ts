@@ -1,5 +1,5 @@
 import { Schedule } from "../db/db.js"
-import { ScheduleDTO } from "../types/schedules.types.js"
+import { CreateScheduleDTO } from "../validators/schedule.validator.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
 import { pool } from "../db/connection.js"
 
@@ -12,7 +12,7 @@ const schedulesService = {
         return result.rows
     },
 
-    async create(data: ScheduleDTO): Promise<Schedule> {
+    async create(data: CreateScheduleDTO): Promise<Schedule> {
 
         const template = await pool.query(
             `SELECT id FROM templates WHERE id = $1`,
