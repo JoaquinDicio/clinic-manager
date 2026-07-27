@@ -21,6 +21,7 @@ const whatsappController = {
         const { messages } = req.body
 
         const invalidMessages = validateBulkPayload(messages)
+
         if (invalidMessages) {
             throw new AppError(400, invalidMessages)
         }

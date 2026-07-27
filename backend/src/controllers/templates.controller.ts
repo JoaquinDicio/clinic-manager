@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import templatesService from "../services/templates.service.js"
 import { TemplateDTO } from "../types/templates.types.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
+import { CreateTemplateSchema } from "../validators/template.validator.js"
 
 const templatesController = {
 
@@ -11,17 +12,13 @@ const templatesController = {
     },
 
     async create(req: Request, res: Response) {
-        const { name, body, variables }: TemplateDTO = req.body
+        const result = CreateTemplateSchema.safeParse(req.body);
 
-        if (!name?.trim() || !body?.trim()) {
-            throw new AppError(400, "Name and body are required fields")
+        if (!result.success) {
+            throw new AppError(400, result.error.issues[0].message)
         }
 
-        if (!Array.isArray(variables)) {
-            throw new AppError(400, "Variables must be an array")
-        }
-
-        const response = await templatesService.create({ name, body, variables })
+        const response = await templatesService.create({ ...result.data })
         res.status(201).json(response)
     },
 

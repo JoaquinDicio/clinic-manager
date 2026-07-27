@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import clientsService from "../services/clients.service.js"
 import { ClientDTO } from "../types/clients.types.js"
 import { AppError } from "../middlewares/errorMiddleware.js"
-import { CreateClientDTO, CreateClientSchema } from "../validators/client.validator.js"
+import { CreateClientSchema } from "../validators/client.validator.js"
 
 const clientsController = {
 
@@ -22,7 +22,7 @@ const clientsController = {
             throw new AppError(400, result.error.issues[0].message)
         }
 
-        const response = await clientsService.create({ ...result.data } as CreateClientDTO)
+        const response = await clientsService.create({ ...result.data })
 
         res.status(201).json(response)
 

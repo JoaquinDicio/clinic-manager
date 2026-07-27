@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { AppError } from "../middlewares/errorMiddleware.js"
 import appointmentsService from "../services/appointments.service.js"
-import { CreateAppointmentDTO, CreateAppointmentSchema } from "../validators/appointment.validator.js"
+import { CreateAppointmentSchema } from "../validators/appointment.validator.js"
 
 const appointmentsController = {
 
