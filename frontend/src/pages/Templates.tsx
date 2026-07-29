@@ -18,7 +18,7 @@ export default function Templates() {
 
     return <section>
         <div>
-            <NewTemplateForm />
+            <NewTemplateForm setTemplates={setTemplates} />
         </div>
         <div>
             <ul className="pt-10 grid gap-2 grid-cols-3">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { type Template } from "../types/db";
 
 interface TemplateForm {
     name: string;
@@ -6,7 +7,9 @@ interface TemplateForm {
     variables: string[];
 }
 
-export default function NewTemplateForm() {
+export default function NewTemplateForm({ setTemplates }: { setTemplates: React.Dispatch<React.SetStateAction<Template[]>> }) {
+
+    const [error, setError] = useState<string | null>(null);
 
     const [form, setForm] = useState<TemplateForm>({
         name: "",
@@ -54,6 +57,11 @@ export default function NewTemplateForm() {
 
         try {
 
+            const formData = {
+                ...form,
+                variables: extractVariables(form.body)
+            };
+
             const response = await fetch(
                 "http://localhost:8080/templates",
                 {
@@ -61,15 +69,18 @@ export default function NewTemplateForm() {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ ...form, variables: extractVariables(form.body) })
+                    body: JSON.stringify(formData)
                 }
             );
 
             if (!response.ok) {
-                throw new Error("Failed creating template");
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Error creating template");
             }
 
-            alert("Template created");
+            const newTemplate: Template = await response.json();
+
+            setError("");
 
             setForm({
                 name: "",
@@ -77,8 +88,14 @@ export default function NewTemplateForm() {
                 variables: []
             });
 
-        } catch (error) {
-            console.error(error);
+            setTemplates(prevTemplates => [
+                ...prevTemplates,
+                newTemplate
+            ]);
+
+        } catch (error: Error | any) {
+            console.error(error)
+            setError(error.message || "Error creating template");
         }
     };
 
@@ -86,7 +103,7 @@ export default function NewTemplateForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="space-y-5"
+            className="space-y-5 flex flex-col"
         >
 
             <div>
@@ -120,9 +137,9 @@ export default function NewTemplateForm() {
                     className="rounded p-2 w-full bg-white shadow-sm"
                 />
             </div>
-
+            <i className="text-red-500 text-sm">{error}</i>
             <button
-                className="bg-blue-600 cursor-pointer hover:bg-blue-700 duration-100 text-white px-5 py-2 rounded"
+                className="bg-blue-600 max-w-fit cursor-pointer hover:bg-blue-700 duration-100 text-white px-5 py-2 rounded"
             >
                 Create Template
             </button>
