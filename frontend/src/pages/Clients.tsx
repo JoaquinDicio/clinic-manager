@@ -31,9 +31,10 @@ export default function Clients() {
         <NewClientForm setClients={setClients} />
         <ul className="pt-10 grid gap-2 grid-cols-3">
             {clients.map((client) =>
-                <li key={client.id} className="bg-white w-full hover:shadow-sm duration-75 p-4 rounded-sm">
+                <li key={client.id} className="bg-white gap-3 w-full hover:shadow-sm duration-75 p-4 rounded-sm flex flex-col">
                     <p className="font-bold">{client.name}</p>
                     <i className="text-sm">{client.phone}</i>
+                    <i className="text-xs"># {client.id}</i>
                 </li>
             )}
         </ul>
