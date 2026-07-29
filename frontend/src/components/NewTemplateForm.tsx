@@ -65,9 +65,6 @@ export default function NewTemplateForm() {
                 }
             );
 
-            console.log(response);
-
-
             if (!response.ok) {
                 throw new Error("Failed creating template");
             }
@@ -102,7 +99,7 @@ export default function NewTemplateForm() {
                     value={form.name}
                     onChange={handleChange}
                     placeholder="Appointment reminder"
-                    className="border rounded p-2 w-full"
+                    className="rounded p-2 w-full bg-white shadow-sm"
                 />
             </div>
 
@@ -120,12 +117,12 @@ export default function NewTemplateForm() {
                         "Hola {{name}}, recordamos tu turno para {{date}}"
                     }
                     rows={6}
-                    className="border rounded p-2 w-full"
+                    className="rounded p-2 w-full bg-white shadow-sm"
                 />
             </div>
 
             <button
-                className="bg-blue-600 text-white px-5 py-2 rounded"
+                className="bg-blue-600 cursor-pointer hover:bg-blue-700 duration-100 text-white px-5 py-2 rounded"
             >
                 Create Template
             </button>
