@@ -1,20 +1,30 @@
 import { useEffect, useState } from "react";
 import NewTemplateForm from "../components/NewTemplateForm";
 import type { Template } from "../types/db";
+import { getTemplates } from "../services/templates.service";
 
 export default function Templates() {
     const [templates, setTemplates] = useState<Template[]>([])
+    const [error, setError] = useState<string | null>(null)
 
-    async function getTemplates() {
-        const response = await fetch("http://localhost:8080/templates");
-        const data = await response.json();
-        setTemplates(data);
+    async function fetchTemplates() {
+        try {
+            const response = await getTemplates();
+            const data = await response.json();
+            setTemplates(data);
+        } catch (err) {
+            setError("Error fetching templates");
+            console.error("Error:", err);
+        }
     }
 
     useEffect(() => {
-        getTemplates();
-        console.log(templates)
+        fetchTemplates();
     }, []);
+
+    if (error) {
+        return <div className="text-red-500">{error}</div>;
+    }
 
     return <section>
         <div>

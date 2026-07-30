@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
 import type { Client } from '../types/db'
 import NewClientForm from "../components/NewClientForm";
+import { getClients } from "../services/clients.service";
 
 export default function Clients() {
 
     const [clients, setClients] = useState<Client[]>([])
     const [error, setError] = useState<string | null>(null)
 
+    async function fetchClients() {
+        try {
+            const response = await getClients();
+            const data = await response.json();
+            setClients(data);
+        } catch (err) {
+            setError("Error fetching clients");
+            console.error("Error:", err);
+        }
+    };
+
     useEffect(() => {
-
-        const fetchClients = async () => {
-            try {
-                const res = await fetch("http://localhost:8080/clients");
-                const data = await res.json();
-                setClients(data);
-            } catch (err) {
-                setError("Error fetching clients");
-                console.error("Error:", err);
-            }
-        };
-
         fetchClients();
     }, []);
 
