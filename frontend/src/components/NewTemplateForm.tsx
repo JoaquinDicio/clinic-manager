@@ -13,7 +13,7 @@ export default function NewTemplateForm({ setTemplates }: { setTemplates: React.
 
     const [error, setError] = useState<string | null>(null);
 
-    const [loading, setLoading] = useState(false);
+    const [posting, setPosting] = useState(false);
 
     const [form, setForm] = useState<TemplateForm>(INITIAL_FORM);
 
@@ -29,7 +29,7 @@ export default function NewTemplateForm({ setTemplates }: { setTemplates: React.
         e.preventDefault();
 
         try {
-            setLoading(true);
+            setPosting(true);
             setError(null);
 
             const formData = {
@@ -66,7 +66,7 @@ export default function NewTemplateForm({ setTemplates }: { setTemplates: React.
             }
 
         } finally {
-            setLoading(false);
+            setPosting(false);
         }
     };
 
@@ -117,9 +117,9 @@ export default function NewTemplateForm({ setTemplates }: { setTemplates: React.
             <button
                 type="submit"
                 className="bg-blue-600 disabled:bg-gray-500 max-w-fit cursor-pointer hover:bg-blue-700 duration-100 text-white px-5 py-2 rounded"
-                disabled={loading}
+                disabled={posting}
             >
-                {loading ? "Creando..." : "Crear Template"}
+                {posting ? "Creando..." : "Crear Template"}
             </button>
         </form>
     );

@@ -1,37 +1,40 @@
-import type { Client } from '../types/db'
+import type { Client } from "../types/db";
 import { useState } from "react";
+import { postClient } from "../services/clients.service";
+import { type ClientForm } from "../types/clients";
 
 interface Props {
-    setClients: React.Dispatch<React.SetStateAction<Client[]>>
+    setClients: React.Dispatch<React.SetStateAction<Client[]>>;
 }
 
 export default function NewClientForm({ setClients }: Props) {
 
-    const [posting, setPosting] = useState<boolean>(false)
-    const [error, setError] = useState<string | null>(null)
+    const INITAL_FORM: ClientForm = { name: "", phone: "" };
+
+    const [form, setForm] = useState<ClientForm>(INITAL_FORM);
+
+    const [posting, setPosting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const { name, value } = e.target;
+
+        setForm(prev => ({
+            ...prev,
+            [name]: value,
+        }));
+    }
+
 
     async function addClient(e: React.FormEvent<HTMLFormElement>) {
-
         e.preventDefault();
-        setPosting(true)
-        setError(null)
+
+        setPosting(true);
+        setError(null);
 
         try {
-            const form = e.currentTarget;
-            const formData = new FormData(form);
-
-            const newClient = {
-                name: formData.get("name"),
-                phone: formData.get("phone"),
-            };
-
-            const res = await fetch("http://localhost:8080/clients", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newClient),
-            });
+            const res = await postClient(form);
 
             if (!res.ok) {
                 const error = await res.json();
@@ -39,24 +42,63 @@ export default function NewClientForm({ setClients }: Props) {
             }
 
             const data: Client = await res.json();
-            setClients(prev => [...prev, data])
-            form.reset()
+
+            setClients(prev => [...prev, data]);
+
+            setForm(INITAL_FORM);
 
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Error adding client");
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Error adding client"
+            );
+
             console.error("Error:", err);
-        }
-        finally {
-            setPosting(false)
+
+        } finally {
+            setPosting(false);
         }
     }
-    return <form onSubmit={(e: React.SubmitEvent<HTMLFormElement>) => addClient(e)} className="flex items-start gap-3 flex-col">
-        <p>Agregar Cliente</p>
-        <input name="name" type="text" placeholder="Nombre Cliente" className="bg-white shadow-sm rounded-sm p-2" />
-        <input name="phone" type="text" placeholder="Telefono" className="shadow-sm bg-white rounded-sm p-2" />
-        <button disabled={posting} className="rounded-sm bg-blue-500 text-white p-2">
-            {posting ? "Agregando..." : "Agregar"}
-        </button>
-        {error && <p className="text-red-500">{error}</p>}
-    </form>
+
+
+    return (
+        <form
+            onSubmit={addClient}
+            className="flex items-start gap-3 flex-col"
+        >
+            <p>Agregar Cliente</p>
+
+            <input
+                name="name"
+                type="text"
+                placeholder="Nombre Cliente"
+                value={form.name}
+                onChange={handleChange}
+                className="bg-white shadow-sm rounded-sm p-2"
+            />
+
+            <input
+                name="phone"
+                type="text"
+                placeholder="Telefono"
+                value={form.phone}
+                onChange={handleChange}
+                className="shadow-sm bg-white rounded-sm p-2"
+            />
+
+            <button
+                disabled={posting}
+                className="rounded-sm bg-blue-500 text-white p-2"
+            >
+                {posting ? "Agregando..." : "Agregar"}
+            </button>
+
+            {error && (
+                <p className="text-red-500">
+                    {error}
+                </p>
+            )}
+        </form>
+    );
 }
