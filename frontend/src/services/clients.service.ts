@@ -21,3 +21,15 @@ export async function postClient(formData: ClientForm): Promise<Response> {
     }
   );
 }
+
+export async function deleteClient(cliendId: string): Promise<Response> {
+  return await fetch(
+    `http://localhost:8080/clients/${cliendId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  );
+}
