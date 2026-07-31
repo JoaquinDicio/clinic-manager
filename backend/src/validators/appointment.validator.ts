@@ -16,6 +16,11 @@ export const CreateAppointmentSchema = z.object({
     reminder: z
         .boolean(),
 
+    templateId: z
+        .string()
+        .uuid("Template ID inválido")
+        .optional(),
+
     slots: z
         .number()
         .int("Debe ser un número entero")

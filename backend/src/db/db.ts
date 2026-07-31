@@ -30,6 +30,7 @@ export type Appointment = {
     time: string
     slots: number
     reminder: boolean
+    templateId?: string | null
     createdAt: string
 }
 

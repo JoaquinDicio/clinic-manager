@@ -54,6 +54,7 @@ export default function Templates() {
                             <button className="bg-red-500 cursor-pointer text-xs hover:bg-red-700 duration-100 p-1 text-white rounded-sm" onClick={() => fetchDelete(template.id)}>Eliminar</button>
                         </div>
                         <p>{template.body}</p>
+                        <i className="text-xs">{template.id}</i>
                     </li>
                 ))}
             </ul>
