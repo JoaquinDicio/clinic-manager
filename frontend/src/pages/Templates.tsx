@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NewTemplateForm from "../components/NewTemplateForm";
 import type { Template } from "../types/db";
-import { getTemplates } from "../services/templates.service";
+import { deleteTemplate, getTemplates } from "../services/templates.service";
 
 export default function Templates() {
     const [templates, setTemplates] = useState<Template[]>([])
@@ -14,6 +14,21 @@ export default function Templates() {
             setTemplates(data);
         } catch (err) {
             setError("Error fetching templates");
+            console.error("Error:", err);
+        }
+    }
+
+    async function fetchDelete(templateId: string) {
+
+        try {
+            const response = await deleteTemplate(templateId);
+
+            if (response.ok) {
+                setTemplates((prevTemplates) => prevTemplates.filter((template) => template.id !== templateId));
+            }
+
+        } catch (err) {
+            setError("Error deleting template");
             console.error("Error:", err);
         }
     }
@@ -34,7 +49,10 @@ export default function Templates() {
             <ul className="pt-10 grid gap-2 grid-cols-3">
                 {templates.map((template) => (
                     <li key={template.id} className="bg-white shadow-sm rounded-sm p-3">
-                        <p className="font-bold text-sm">{template.name}</p>
+                        <div className="flex justify-between items-center">
+                            <p className="font-bold text-sm">{template.name}</p>
+                            <button className="bg-red-500 cursor-pointer text-xs hover:bg-red-700 duration-100 p-1 text-white rounded-sm" onClick={() => fetchDelete(template.id)}>Eliminar</button>
+                        </div>
                         <p>{template.body}</p>
                     </li>
                 ))}

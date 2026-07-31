@@ -24,3 +24,15 @@ export async function getTemplates(): Promise<Response> {
         }
     );
 }
+
+export async function deleteTemplate(templateId: string): Promise<Response> {
+    return await fetch(
+        `http://localhost:8080/templates/${templateId}`,
+        {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+}

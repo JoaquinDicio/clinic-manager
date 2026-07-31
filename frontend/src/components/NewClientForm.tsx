@@ -12,7 +12,6 @@ export default function NewClientForm({ setClients }: Props) {
     const INITAL_FORM: ClientForm = { name: "", phone: "" };
 
     const [form, setForm] = useState<ClientForm>(INITAL_FORM);
-
     const [posting, setPosting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
