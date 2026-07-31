@@ -8,7 +8,6 @@ const INITIAL_FORM: AppointmentForm = {
   date: "",
   time: "",
   reminder: false,
-  templateId: "",
   slots: 1,
 };
 
@@ -46,10 +45,13 @@ export default function NewAppointmentForm({
       }
 
       const newAppointment = await response.json();
+      
       setAppointments((prevAppointments) => [
         ...prevAppointments,
         newAppointment,
       ]);
+
+      setForm(INITIAL_FORM);
     } catch (error) {
       console.error(error);
 
@@ -115,7 +117,7 @@ export default function NewAppointmentForm({
             <input
               id="templateId"
               name="templateId"
-              value={form.templateId}
+              value={form.templateId || ""}
               onChange={handleChange}
               placeholder="Template ID"
               className="rounded p-2 w-full bg-white shadow-sm"
