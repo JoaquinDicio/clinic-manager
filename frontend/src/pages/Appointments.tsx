@@ -5,9 +5,12 @@ import {
 } from "../services/appointments.service";
 import { type Appointment } from "../types/db.ts";
 import { useState, useEffect } from "react";
+import ModalContainer from "../components/ModalContainer";
 
 export default function Appointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [modal, setModal] = useState<boolean>(false);
 
   useEffect(() => {
     fetchAppointments();
@@ -22,6 +25,7 @@ export default function Appointments() {
       setAppointments(data);
     } catch (err) {
       console.error("Error:", err);
+      setError("Error fetching appointments");
     }
   }
 
@@ -38,12 +42,31 @@ export default function Appointments() {
       }
     } catch (err) {
       console.error("Error:", err);
+      setError("Error deleting appointment");
     }
+  }
+
+  function handleModal() {
+    setModal(!modal);
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
   }
 
   return (
     <div>
-      <NewAppointmentForm setAppointments={setAppointments} />
+      <button
+        onClick={handleModal}
+        className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded"
+      >
+        New Appointment
+      </button>
+      {modal && (
+        <ModalContainer closeFunction={handleModal}>
+          <NewAppointmentForm setAppointments={setAppointments} />
+        </ModalContainer>
+      )}
       <ul className="pt-10 grid gap-2 grid-cols-3">
         {appointments.map((appointment) => (
           <li
