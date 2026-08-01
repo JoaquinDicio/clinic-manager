@@ -1,7 +1,7 @@
 import { type AppointmentForm } from "../types/appointments";
 import { useState } from "react";
 import { postAppointment } from "../services/appointments.service";
-import { type Appointment } from "../types/db";
+import { type AppointmentsWithClient } from "../types/appointments";
 
 const INITIAL_FORM: AppointmentForm = {
   clientId: "",
@@ -14,7 +14,9 @@ const INITIAL_FORM: AppointmentForm = {
 export default function NewAppointmentForm({
   setAppointments,
 }: {
-  setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>;
+  setAppointments: React.Dispatch<
+    React.SetStateAction<AppointmentsWithClient[]>
+  >;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<AppointmentForm>(INITIAL_FORM);
@@ -45,7 +47,7 @@ export default function NewAppointmentForm({
       }
 
       const newAppointment = await response.json();
-      
+
       setAppointments((prevAppointments) => [
         ...prevAppointments,
         newAppointment,

@@ -5,6 +5,13 @@ import { CreateAppointmentSchema } from "../validators/appointment.validator.js"
 
 const appointmentsController = {
   async getAll(req: Request, res: Response) {
+    const include = req.query.include;
+
+    if (include === "client") {
+      const response = await appointmentsService.getAppointmentsWithClient();
+      res.status(200).json(response);
+    }
+
     const response = await appointmentsService.get();
 
     res.status(200).json(response);

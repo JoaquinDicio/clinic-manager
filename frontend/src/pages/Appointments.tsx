@@ -3,12 +3,14 @@ import {
   getAppointments,
   deleteAppointment,
 } from "../services/appointments.service";
-import { type Appointment } from "../types/db.ts";
 import { useState, useEffect } from "react";
 import ModalContainer from "../components/ModalContainer";
+import { type AppointmentsWithClient } from "../types/appointments";
 
 export default function Appointments() {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentsWithClient[]>(
+    [],
+  );
   const [error, setError] = useState<string | null>(null);
   const [modal, setModal] = useState<boolean>(false);
 
@@ -19,10 +21,7 @@ export default function Appointments() {
   async function fetchAppointments() {
     try {
       const response = await getAppointments();
-
-      const data = await response.json();
-
-      setAppointments(data);
+      setAppointments(response);
     } catch (err) {
       console.error("Error:", err);
       setError("Error fetching appointments");
@@ -74,7 +73,7 @@ export default function Appointments() {
             className="bg-white shadow-sm rounded-sm p-3"
           >
             <div className="flex justify-between items-center">
-              <p className="font-bold text-sm">{appointment.date}</p>
+              <p className="font-bold text-sm">{appointment.formatted_date}</p>
               <button
                 className="bg-red-500 cursor-pointer text-xs hover:bg-red-700 duration-100 p-1 text-white rounded-sm"
                 onClick={() => fetchDelete(appointment.id)}
@@ -83,7 +82,7 @@ export default function Appointments() {
               </button>
             </div>
             <p>{appointment.time}</p>
-            <i className="text-xs">Client : {appointment.client_id}</i>
+            <i className="text-xs">Client : {appointment.client?.name}</i>
           </li>
         ))}
       </ul>

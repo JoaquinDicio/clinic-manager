@@ -4,12 +4,45 @@ import { AppError } from "../middlewares/errorMiddleware.js";
 import { CreateAppointmentDTO } from "../validators/appointment.validator.js";
 import { pool } from "../db/connection.js";
 
+interface AppointmentsWithClient extends Appointment {
+  client: {
+    id: string;
+    name: string;
+    phone: string;
+    email: string;
+  };
+}
+
 const appointmentsService = {
   async get(): Promise<Appointment[]> {
     const result = await pool.query(
       "SELECT * FROM appointments ORDER BY date DESC",
     );
     return result.rows;
+  },
+
+  async getAppointmentsWithClient(): Promise<AppointmentsWithClient[]> {
+    const result = await pool.query(`
+    SELECT
+      a.*,
+      c.id AS client_id,
+      c.name AS client_name,
+      c.phone AS client_phone
+    FROM appointments a
+    INNER JOIN clients c
+      ON c.id = a.client_id
+    ORDER BY a.date DESC
+  `);
+
+    return result.rows.map((row) => ({
+      ...row,
+      client: {
+        id: row.client_id,
+        name: row.client_name,
+        phone: row.client_phone,
+        email: row.client_email,
+      },
+    }));
   },
 
   async create(data: CreateAppointmentDTO): Promise<Appointment> {

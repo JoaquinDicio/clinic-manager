@@ -1,14 +1,14 @@
-import { Router } from "express"
-import appointmentsController from "../controllers/appointments.controller.js"
+import { Router } from "express";
+import appointmentsController from "../controllers/appointments.controller.js";
 
-const appointmentsRouter = Router()
+const appointmentsRouter = Router();
 
-appointmentsRouter.get("/", appointmentsController.getAll)
+appointmentsRouter.get("/", appointmentsController.getAll);
 
-appointmentsRouter.post("/", appointmentsController.create)
+appointmentsRouter.post("/", appointmentsController.create);
 
-appointmentsRouter.put("/:id", appointmentsController.create)
+appointmentsRouter.put("/:id", appointmentsController.create);
 
-appointmentsRouter.delete("/:id", appointmentsController.delete)
+appointmentsRouter.delete("/:id", appointmentsController.delete);
 
-export default appointmentsRouter 
+export default appointmentsRouter;
