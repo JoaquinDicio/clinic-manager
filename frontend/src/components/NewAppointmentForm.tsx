@@ -47,10 +47,12 @@ export default function NewAppointmentForm({
       }
 
       const newAppointment = await response.json();
-
       setAppointments((prevAppointments) => [
         ...prevAppointments,
-        newAppointment,
+        {
+          ...newAppointment,
+          formatted_date: new Date(newAppointment.date).toLocaleDateString(),
+        },
       ]);
 
       setForm(INITIAL_FORM);

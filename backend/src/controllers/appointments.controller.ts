@@ -10,6 +10,7 @@ const appointmentsController = {
     if (include === "client") {
       const response = await appointmentsService.getAppointmentsWithClient();
       res.status(200).json(response);
+      return;
     }
 
     const response = await appointmentsService.get();
