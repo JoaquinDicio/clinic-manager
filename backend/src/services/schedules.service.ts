@@ -12,6 +12,15 @@ const schedulesService = {
         return result.rows
     },
 
+    async getPending(): Promise<Schedule[]> {
+        const result = await pool.query<Schedule>(
+            'SELECT * FROM schedules WHERE status = $1',
+            ["pending"]
+        )
+
+        return result.rows
+    },
+
     async create(data: CreateScheduleDTO): Promise<Schedule> {
 
         const template = await pool.query(

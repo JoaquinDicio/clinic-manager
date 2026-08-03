@@ -11,8 +11,6 @@ const whatsappService = {
   ): Promise<SendResult> {
     const id = await client.getNumberId(phone);
 
-    console.log("numberId:", id);
-
     if (!id) {
       throw new Error("No se pudo resolver el número");
     }
