@@ -20,12 +20,15 @@ export default function Schedules() {
       console.error("Error:", err);
     }
   }
+
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
+
   return (
     <div>
       <ul className="pt-10 grid gap-2 grid-cols-3">
+        {schedules.length == 0 && <i>There is no pending schedules.</i>}
         {schedules.map((schedule) => (
           <li
             key={schedule.id}

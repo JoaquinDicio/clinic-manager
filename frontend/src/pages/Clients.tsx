@@ -61,26 +61,29 @@ export default function Clients() {
         Nuevo Cliente
       </button>
 
-      <ul className="pt-10 grid gap-2 grid-cols-3">
-        {clients.map((client) => (
-          <li
-            key={client.id}
-            className="bg-white gap-3 w-full hover:shadow-sm duration-75 p-4 rounded-sm flex flex-col"
-          >
-            <div className="flex justify-between items-center">
-              <p className="font-bold">{client.name}</p>
-              <button
-                onClick={() => fetchDelete(client.id)}
-                className="bg-red-500 cursor-pointer text-xs p-1 hover:bg-red-700 transition-100 text-white rounded-sm"
-              >
-                Eliminar
-              </button>
-            </div>
-            <i className="text-sm">{client.phone}</i>
-            <i className="text-xs"># {client.id}</i>
-          </li>
-        ))}
-      </ul>
+      <div className="pt-10">
+        {clients.length == 0 && <i>There is no clients to show.</i>}
+        <ul className="grid gap-2 grid-cols-3">
+          {clients.map((client) => (
+            <li
+              key={client.id}
+              className="bg-white gap-3 w-full hover:shadow-sm duration-75 p-4 rounded-sm flex flex-col"
+            >
+              <div className="flex justify-between items-center">
+                <p className="font-bold">{client.name}</p>
+                <button
+                  onClick={() => fetchDelete(client.id)}
+                  className="bg-red-500 cursor-pointer text-xs p-1 hover:bg-red-700 transition-100 text-white rounded-sm"
+                >
+                  Eliminar
+                </button>
+              </div>
+              <i className="text-sm">{client.phone}</i>
+              <i className="text-xs"># {client.id}</i>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

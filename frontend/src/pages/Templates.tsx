@@ -61,8 +61,11 @@ export default function Templates() {
           <NewTemplateForm setTemplates={setTemplates} />
         </ModalContainer>
       )}
-      <div>
-        <ul className="pt-10 grid gap-2 grid-cols-3">
+
+      <div className="pt-10">
+        {templates.length == 0 && <i>There is no templates to show.</i>}
+
+        <ul className="grid gap-2 grid-cols-3">
           {templates.map((template) => (
             <li key={template.id} className="bg-white shadow-sm rounded-sm p-3">
               <div className="flex justify-between items-center">
