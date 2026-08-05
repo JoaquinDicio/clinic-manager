@@ -3,6 +3,7 @@ import NewTemplateForm from "../components/NewTemplateForm";
 import type { Template } from "../types/db";
 import { deleteTemplate, getTemplates } from "../services/templates.service";
 import ModalContainer from "../components/ModalContainer";
+import Table from "../components/Table";
 
 export default function Templates() {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -63,25 +64,19 @@ export default function Templates() {
       )}
 
       <div className="pt-10">
-        {templates.length == 0 && <i>There is no templates to show.</i>}
-
-        <ul className="grid gap-2 grid-cols-3">
-          {templates.map((template) => (
-            <li key={template.id} className="bg-white shadow-sm rounded-sm p-3">
-              <div className="flex justify-between items-center">
-                <p className="font-bold text-sm">{template.name}</p>
-                <button
-                  className="bg-red-500 cursor-pointer text-xs hover:bg-red-700 duration-100 p-1 text-white rounded-sm"
-                  onClick={() => fetchDelete(template.id)}
-                >
-                  Eliminar
-                </button>
-              </div>
-              <p>{template.body}</p>
-              <i className="text-xs">{template.id}</i>
-            </li>
-          ))}
-        </ul>
+        {templates.length == 0 ? (
+          <i>There is no templates to show.</i>
+        ) : (
+          <Table
+            data={templates}
+            cols={[
+              { header: "ID", accessor: "id" },
+              { header: "Name", accessor: "name" },
+              { header: "Body", accessor: "body" },
+            ]}
+            onDelete={(id) => fetchDelete(id)}
+          />
+        )}
       </div>
     </section>
   );

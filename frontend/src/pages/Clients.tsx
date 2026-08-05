@@ -3,6 +3,7 @@ import type { Client } from "../types/db";
 import NewClientForm from "../components/NewClientForm";
 import { getClients, deleteClient } from "../services/clients.service";
 import ModalContainer from "../components/ModalContainer";
+import Table from "../components/Table.tsx";
 
 export default function Clients() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -62,27 +63,19 @@ export default function Clients() {
       </button>
 
       <div className="pt-10">
-        {clients.length == 0 && <i>There is no clients to show.</i>}
-        <ul className="grid gap-2 grid-cols-3">
-          {clients.map((client) => (
-            <li
-              key={client.id}
-              className="bg-white gap-3 w-full hover:shadow-sm duration-75 p-4 rounded-sm flex flex-col"
-            >
-              <div className="flex justify-between items-center">
-                <p className="font-bold">{client.name}</p>
-                <button
-                  onClick={() => fetchDelete(client.id)}
-                  className="bg-red-500 cursor-pointer text-xs p-1 hover:bg-red-700 transition-100 text-white rounded-sm"
-                >
-                  Eliminar
-                </button>
-              </div>
-              <i className="text-sm">{client.phone}</i>
-              <i className="text-xs"># {client.id}</i>
-            </li>
-          ))}
-        </ul>
+        {clients.length == 0 ? (
+          <i>There is no clients to show.</i>
+        ) : (
+          <Table
+            data={clients}
+            cols={[
+              { header: "ID", accessor: "id" },
+              { header: "Name", accessor: "name" },
+              { header: "Phone", accessor: "phone" },
+            ]}
+            onDelete={(id) => fetchDelete(id)}
+          />
+        )}
       </div>
     </div>
   );

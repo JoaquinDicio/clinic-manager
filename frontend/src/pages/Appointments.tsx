@@ -67,30 +67,32 @@ export default function Appointments() {
         </ModalContainer>
       )}
       <div className="pt-10">
-        {appointments.length == 0 && <i>There is no appointments to show.</i>}
-
-        <ul className="grid gap-2 grid-cols-3">
-          {appointments.map((appointment) => (
-            <li
-              key={appointment.id}
-              className="bg-white shadow-sm rounded-sm p-3"
-            >
-              <div className="flex justify-between items-center">
-                <p className="font-bold text-sm">
-                  {appointment.formatted_date}
-                </p>
-                <button
-                  className="bg-red-500 cursor-pointer text-xs hover:bg-red-700 duration-100 p-1 text-white rounded-sm"
-                  onClick={() => fetchDelete(appointment.id)}
-                >
-                  Eliminar
-                </button>
-              </div>
-              <p>{appointment.time}</p>
-              <i className="text-xs">Client : {appointment.client?.name}</i>
-            </li>
-          ))}
-        </ul>
+        {appointments.length == 0 ? (
+          <i>There is no appointments to show.</i>
+        ) : (
+          <ul className="grid gap-2 grid-cols-3">
+            {appointments.map((appointment) => (
+              <li
+                key={appointment.id}
+                className="bg-white shadow-sm rounded-sm p-3"
+              >
+                <div className="flex justify-between items-center">
+                  <p className="font-bold text-sm">
+                    {appointment.formatted_date}
+                  </p>
+                  <button
+                    className="bg-red-500 cursor-pointer text-xs hover:bg-red-700 duration-100 p-1 text-white rounded-sm"
+                    onClick={() => fetchDelete(appointment.id)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+                <p>{appointment.time}</p>
+                <i className="text-xs">Client : {appointment.client?.name}</i>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

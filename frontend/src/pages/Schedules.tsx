@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Schedule } from "../types/db";
 import { getSchedules } from "../services/schedules.service";
+import Table from "../components/Table";
 
 export default function Schedules() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -26,23 +27,19 @@ export default function Schedules() {
   }
 
   return (
-    <div>
-      <ul className="pt-10 grid gap-2 grid-cols-3">
-        {schedules.length == 0 && <i>There is no pending schedules.</i>}
-        {schedules.map((schedule) => (
-          <li
-            key={schedule.id}
-            className="bg-white gap-3 w-full hover:shadow-sm duration-75 p-4 rounded-sm flex flex-col"
-          >
-            <div className="flex justify-between items-center">
-              <p className="font-bold">{schedule.client_id}</p>
-              <p className="font-bold">{schedule.status}</p>
-            </div>
-            <i className="text-sm">Time:{schedule.sendAt}</i>
-            <i className="text-xs"># {schedule.id}</i>
-          </li>
-        ))}
-      </ul>
+    <div className="pt-10">
+      {schedules.length == 0 ? (
+        <i>There is no pending schedules.</i>
+      ) : (
+        <Table
+          cols={[
+            { header: "Client", accessor: "client_id" },
+            { header: "Status", accessor: "status" },
+            { header: "Time", accessor: "sendAt" },
+          ]}
+          data={schedules}
+        />
+      )}
     </div>
   );
 }
