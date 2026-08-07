@@ -71,7 +71,7 @@ export default function Clients() {
             cols={[
               { header: "ID", accessor: (row) => row.id },
               { header: "Name", accessor: (row) => row.name },
-              { header: "Phone", accessor: (row) => row.name },
+              { header: "Phone", accessor: (row) => row.phone },
             ]}
             onDelete={(id) => fetchDelete(id)}
           />

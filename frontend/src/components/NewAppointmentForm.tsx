@@ -1,7 +1,9 @@
 import { type AppointmentForm } from "../types/appointments";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { postAppointment } from "../services/appointments.service";
 import { type AppointmentsWithClient } from "../types/appointments";
+import { type Template } from "../types/db";
+import { getTemplates } from "../services/templates.service";
 
 const INITIAL_FORM: AppointmentForm = {
   clientId: "",
@@ -20,8 +22,23 @@ export default function NewAppointmentForm({
 }) {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<AppointmentForm>(INITIAL_FORM);
+  const [templates, setTemplates] = useState<Template[]>([]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  async function fetchTemplates() {
+    try {
+      const response = await getTemplates();
+      const data = await response.json();
+      setTemplates(data);
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  }
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, type, value, checked } = e.target;
 
     setForm((prevForm) => ({
@@ -32,6 +49,13 @@ export default function NewAppointmentForm({
           : type === "number"
             ? Number(value)
             : value,
+    }));
+  }
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -117,16 +141,24 @@ export default function NewAppointmentForm({
         />
         {form.reminder && (
           <>
-            <label htmlFor="templateId">Template ID</label>
-            <input
+            <label htmlFor="templateId">Template</label>
+
+            <select
               id="templateId"
               name="templateId"
               value={form.templateId || ""}
-              onChange={handleChange}
-              placeholder="Template ID"
+              onChange={handleSelectChange}
               className="rounded p-2 w-full bg-white shadow-sm"
               required
-            />
+            >
+              <option value="">Seleccioná un template</option>
+
+              {templates.map((template) => (
+                <option key={template.id} value={template.id}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
           </>
         )}
         <label htmlFor="slots">Slots</label>

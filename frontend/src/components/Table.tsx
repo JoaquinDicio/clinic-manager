@@ -27,7 +27,7 @@ export default function Table<T extends Entity>({
               {col.header}
             </th>
           ))}
-          {onDelete && <th className="px-6 py-3 text-right">Actions</th>};
+          {onDelete && <th className="px-6 py-3 text-right">Actions</th>}
         </tr>
       </thead>
 
