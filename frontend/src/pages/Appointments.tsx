@@ -6,6 +6,7 @@ import {
 import { useState, useEffect } from "react";
 import ModalContainer from "../components/ModalContainer";
 import { type AppointmentsWithClient } from "../types/appointments";
+import Table from "../components/Table";
 
 export default function Appointments() {
   const [appointments, setAppointments] = useState<AppointmentsWithClient[]>(
@@ -70,28 +71,16 @@ export default function Appointments() {
         {appointments.length == 0 ? (
           <i>There is no appointments to show.</i>
         ) : (
-          <ul className="grid gap-2 grid-cols-3">
-            {appointments.map((appointment) => (
-              <li
-                key={appointment.id}
-                className="bg-white shadow-sm rounded-sm p-3"
-              >
-                <div className="flex justify-between items-center">
-                  <p className="font-bold text-sm">
-                    {appointment.formatted_date}
-                  </p>
-                  <button
-                    className="bg-red-500 cursor-pointer text-xs hover:bg-red-700 duration-100 p-1 text-white rounded-sm"
-                    onClick={() => fetchDelete(appointment.id)}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-                <p>{appointment.time}</p>
-                <i className="text-xs">Client : {appointment.client?.name}</i>
-              </li>
-            ))}
-          </ul>
+          <Table
+            cols={[
+              { header: "ID", accessor: (row) => row.id },
+              { header: "Client", accessor: (row) => row.client.name },
+              { header: "Date", accessor: (row) => row.date },
+              { header: "Time", accessor: (row) => row.time },
+            ]}
+            data={appointments}
+            onDelete={(id) => fetchDelete(id)}
+          />
         )}
       </div>
     </div>

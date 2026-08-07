@@ -4,7 +4,7 @@ interface Entity {
 
 type Column<T> = {
   header: string;
-  accessor: keyof T;
+  accessor: (row: T) => unknown;
 };
 
 interface TableProps<T> {
@@ -27,7 +27,7 @@ export default function Table<T extends Entity>({
               {col.header}
             </th>
           ))}
-          {onDelete && <th className="px-6 py-3 text-right">Actions</th>}
+          {onDelete && <th className="px-6 py-3 text-right">Actions</th>};
         </tr>
       </thead>
 
@@ -39,9 +39,10 @@ export default function Table<T extends Entity>({
           >
             {cols.map((col) => (
               <td key={String(col.accessor)} className="px-6 py-3">
-                {String(row[col.accessor])}
+                {String(col.accessor(row))}
               </td>
             ))}
+
             {onDelete && (
               <td className="px-6 py-3 text-right">
                 <button

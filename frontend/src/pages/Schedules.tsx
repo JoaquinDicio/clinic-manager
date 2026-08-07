@@ -33,9 +33,9 @@ export default function Schedules() {
       ) : (
         <Table
           cols={[
-            { header: "Client", accessor: "client_id" },
-            { header: "Status", accessor: "status" },
-            { header: "Time", accessor: "sendAt" },
+            { header: "Client", accessor: (row) => row.client_id },
+            { header: "Status", accessor: (row) => row.status },
+            { header: "Time", accessor: (row) => row.sendAt },
           ]}
           data={schedules}
         />

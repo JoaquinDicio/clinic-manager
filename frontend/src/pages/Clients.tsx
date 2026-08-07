@@ -69,9 +69,9 @@ export default function Clients() {
           <Table
             data={clients}
             cols={[
-              { header: "ID", accessor: "id" },
-              { header: "Name", accessor: "name" },
-              { header: "Phone", accessor: "phone" },
+              { header: "ID", accessor: (row) => row.id },
+              { header: "Name", accessor: (row) => row.name },
+              { header: "Phone", accessor: (row) => row.name },
             ]}
             onDelete={(id) => fetchDelete(id)}
           />

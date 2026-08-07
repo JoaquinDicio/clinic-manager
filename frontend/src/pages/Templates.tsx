@@ -70,9 +70,9 @@ export default function Templates() {
           <Table
             data={templates}
             cols={[
-              { header: "ID", accessor: "id" },
-              { header: "Name", accessor: "name" },
-              { header: "Body", accessor: "body" },
+              { header: "ID", accessor: (row) => row.id },
+              { header: "Name", accessor: (row) => row.name },
+              { header: "Body", accessor: (row) => row.body },
             ]}
             onDelete={(id) => fetchDelete(id)}
           />
