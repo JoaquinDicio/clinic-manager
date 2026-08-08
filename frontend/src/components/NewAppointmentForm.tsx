@@ -1,9 +1,8 @@
 import { type AppointmentForm } from "../types/appointments";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { postAppointment } from "../services/appointments.service";
 import { type AppointmentsWithClient } from "../types/appointments";
-import { type Template } from "../types/db";
-import { getTemplates } from "../services/templates.service";
+import useTemplates from "../hooks/useTemplates";
 
 const INITIAL_FORM: AppointmentForm = {
   clientId: "",
@@ -20,23 +19,9 @@ export default function NewAppointmentForm({
     React.SetStateAction<AppointmentsWithClient[]>
   >;
 }) {
+  const { templates, error: templatesError } = useTemplates();
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<AppointmentForm>(INITIAL_FORM);
-  const [templates, setTemplates] = useState<Template[]>([]);
-
-  async function fetchTemplates() {
-    try {
-      const response = await getTemplates();
-      const data = await response.json();
-      setTemplates(data);
-    } catch (err) {
-      console.error("Error:", err);
-    }
-  }
-
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, type, value, checked } = e.target;
@@ -91,6 +76,11 @@ export default function NewAppointmentForm({
     }
   }
 
+  async function fetchSearchClient(e: React.FormEvent) {
+    e.preventDefault();
+    // TODO -> Crear un useClients() que se encargue de manejar la búsqueda de clientes
+  }
+
   return (
     <div>
       <form
@@ -109,6 +99,7 @@ export default function NewAppointmentForm({
           className="rounded p-2 w-full bg-white shadow-sm"
           required
         />
+        <button onClick={(e) => fetchSearchClient(e)}>Buscar</button>
         <label htmlFor="date">Date</label>
         <input
           id="date"
@@ -159,6 +150,10 @@ export default function NewAppointmentForm({
                 </option>
               ))}
             </select>
+
+            {templatesError && (
+              <div className="text-red-500">{templatesError}</div>
+            )}
           </>
         )}
         <label htmlFor="slots">Slots</label>

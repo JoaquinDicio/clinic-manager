@@ -10,26 +10,20 @@ export async function getClients(): Promise<Response> {
 }
 
 export async function postClient(formData: ClientForm): Promise<Response> {
-  return await fetch(
-    "http://localhost:8080/clients",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    }
-  );
+  return await fetch("http://localhost:8080/clients", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
 }
 
 export async function deleteClient(cliendId: string): Promise<Response> {
-  return await fetch(
-    `http://localhost:8080/clients/${cliendId}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }
-  );
+  return await fetch(`http://localhost:8080/clients/${cliendId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
