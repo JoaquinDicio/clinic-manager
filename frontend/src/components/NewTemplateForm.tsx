@@ -1,126 +1,89 @@
 import { useState } from "react";
-import { type Template } from "../types/db";
 import { extractVariables } from "../utils/templates";
 import { type TemplateForm } from "../types/templates";
-import { postTemplate } from "../services/templates.service";
+
+interface Props {
+  addTemplate: (template: TemplateForm) => Promise<TemplateForm>;
+  error: string | null;
+}
 
 const INITIAL_FORM: TemplateForm = {
-    name: "",
-    body: ""
+  name: "",
+  body: "",
 };
 
-export default function NewTemplateForm({ setTemplates }: { setTemplates: React.Dispatch<React.SetStateAction<Template[]>>; }) {
+export default function NewTemplateForm({ addTemplate, error }: Props) {
+  const [posting, setPosting] = useState(false);
 
-    const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState<TemplateForm>(INITIAL_FORM);
 
-    const [posting, setPosting] = useState(false);
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-    const [form, setForm] = useState<TemplateForm>(INITIAL_FORM);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPosting(true);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setForm(prevForm => ({
-            ...prevForm,
-            [e.target.name]: e.target.value
-        }));
+    const formData = {
+      ...form,
+      variables: extractVariables(form.body),
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const template = await addTemplate(formData);
 
-        e.preventDefault();
+    if (template) {
+      setForm(INITIAL_FORM);
+    }
 
-        try {
-            setPosting(true);
-            setError(null);
+    setPosting(false);
+  };
 
-            const formData = {
-                ...form,
-                variables: extractVariables(form.body)
-            };
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5 flex flex-col">
+      <div>
+        <label htmlFor="name">Name</label>
 
-            const response = await postTemplate(formData);
+        <input
+          id="name"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="Appointment reminder"
+          className="rounded p-2 w-full bg-white shadow-sm"
+          required
+        />
+      </div>
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Error creating template");
-            }
+      <div>
+        <label htmlFor="body">Message</label>
 
-            const newTemplate: Template = await response.json();
+        <textarea
+          id="body"
+          name="body"
+          value={form.body}
+          onChange={handleChange}
+          placeholder="Hola {{name}}, recordamos tu turno para {{date}}"
+          rows={6}
+          className="rounded p-2 w-full bg-white shadow-sm"
+          required
+        />
+      </div>
 
-            setForm(INITIAL_FORM);
+      {error && <i className="text-red-500 text-sm">{error}</i>}
 
-            setTemplates(prevTemplates => [
-                ...prevTemplates,
-                newTemplate
-            ]);
-
-        } catch (error: unknown) {
-            console.error(error);
-
-            if (error instanceof Error) {
-
-                setError(error.message);
-
-            } else {
-
-                setError("Error creating template");
-            }
-
-        } finally {
-            setPosting(false);
-        }
-    };
-
-    return (
-        <form
-            onSubmit={handleSubmit}
-            className="space-y-5 flex flex-col"
-        >
-            <div>
-                <label htmlFor="name">
-                    Name
-                </label>
-
-                <input
-                    id="name"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Appointment reminder"
-                    className="rounded p-2 w-full bg-white shadow-sm"
-                    required
-                />
-            </div>
-
-            <div>
-                <label htmlFor="body">
-                    Message
-                </label>
-
-                <textarea
-                    id="body"
-                    name="body"
-                    value={form.body}
-                    onChange={handleChange}
-                    placeholder="Hola {{name}}, recordamos tu turno para {{date}}"
-                    rows={6}
-                    className="rounded p-2 w-full bg-white shadow-sm"
-                    required
-                />
-            </div>
-
-            {error && (
-                <i className="text-red-500 text-sm">
-                    {error}
-                </i>
-            )}
-
-            <button
-                type="submit"
-                className="bg-blue-600 disabled:bg-gray-500 max-w-fit cursor-pointer hover:bg-blue-700 duration-100 text-white px-5 py-2 rounded"
-                disabled={posting}
-            >
-                {posting ? "Creando..." : "Crear Template"}
-            </button>
-        </form>
-    );
+      <button
+        type="submit"
+        className="bg-blue-600 disabled:bg-gray-500 max-w-fit cursor-pointer hover:bg-blue-700 duration-100 text-white px-5 py-2 rounded"
+        disabled={posting}
+      >
+        {posting ? "Creando..." : "Crear Template"}
+      </button>
+    </form>
+  );
 }

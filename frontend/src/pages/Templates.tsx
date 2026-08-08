@@ -1,48 +1,17 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NewTemplateForm from "../components/NewTemplateForm";
-import type { Template } from "../types/db";
-import { deleteTemplate, getTemplates } from "../services/templates.service";
 import ModalContainer from "../components/ModalContainer";
 import Table from "../components/Table";
+import useTemplates from "../hooks/useTemplates";
 
 export default function Templates() {
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { templates, error, fetchDelete, addTemplate, actionError } =
+    useTemplates();
   const [modal, setModal] = useState<boolean>(false);
-
-  async function fetchTemplates() {
-    try {
-      const response = await getTemplates();
-      const data = await response.json();
-      setTemplates(data);
-    } catch (err) {
-      setError("Error fetching templates");
-      console.error("Error:", err);
-    }
-  }
-
-  async function fetchDelete(templateId: string) {
-    try {
-      const response = await deleteTemplate(templateId);
-
-      if (response.ok) {
-        setTemplates((prevTemplates) =>
-          prevTemplates.filter((template) => template.id !== templateId),
-        );
-      }
-    } catch (err) {
-      setError("Error deleting template");
-      console.error("Error:", err);
-    }
-  }
 
   function handleModal() {
     setModal(!modal);
   }
-
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
@@ -59,7 +28,7 @@ export default function Templates() {
 
       {modal && (
         <ModalContainer closeFunction={handleModal}>
-          <NewTemplateForm setTemplates={setTemplates} />
+          <NewTemplateForm error={actionError} addTemplate={addTemplate} />
         </ModalContainer>
       )}
 
