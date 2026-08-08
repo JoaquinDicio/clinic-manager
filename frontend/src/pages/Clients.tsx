@@ -1,43 +1,12 @@
-import { useState, useEffect } from "react";
-import type { Client } from "../types/db";
 import NewClientForm from "../components/NewClientForm";
-import { getClients, deleteClient } from "../services/clients.service";
 import ModalContainer from "../components/ModalContainer";
 import Table from "../components/Table.tsx";
+import useClients from "../hooks/useClients.tsx";
+import { useState } from "react";
 
 export default function Clients() {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [modal, setModal] = useState<boolean>(false);
-
-  useEffect(() => {
-    fetchClients();
-  }, []);
-
-  async function fetchClients() {
-    try {
-      const response = await getClients();
-      const data = await response.json();
-      setClients(data);
-    } catch (err) {
-      setError("Error fetching clients");
-      console.error("Error:", err);
-    }
-  }
-
-  async function fetchDelete(clientId: string) {
-    try {
-      const response = await deleteClient(clientId);
-      if (response.ok) {
-        setClients((prevClients) =>
-          prevClients.filter((client) => client.id !== clientId),
-        );
-      }
-    } catch (err) {
-      setError("Error deleting client");
-      console.error("Error:", err);
-    }
-  }
+  const { clients, error, fetchDelete, addClient, actionError } = useClients();
 
   function handleModal() {
     setModal(!modal);
@@ -51,7 +20,7 @@ export default function Clients() {
     <div>
       {modal && (
         <ModalContainer closeFunction={handleModal}>
-          <NewClientForm setClients={setClients} />
+          <NewClientForm addClient={addClient} error={actionError} />
         </ModalContainer>
       )}
 

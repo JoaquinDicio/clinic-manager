@@ -64,5 +64,6 @@ export default function useTemplates() {
       }
     }
   }
+
   return { templates, error, fetchDelete, addTemplate, actionError };
 }
