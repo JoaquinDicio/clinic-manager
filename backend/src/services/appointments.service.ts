@@ -45,7 +45,12 @@ const appointmentsService = {
     ORDER BY a.date DESC
   `);
 
-    return result.rows;
+    const appointments = result.rows.map((appointment) => ({
+      ...appointment,
+      formattedDate: appointment.date.toLocaleDateString(),
+    }));
+
+    return appointments;
   },
 
   async create(data: CreateAppointmentDTO): Promise<AppointmentWithClient> {

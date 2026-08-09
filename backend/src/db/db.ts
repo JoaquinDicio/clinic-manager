@@ -19,7 +19,7 @@ export type Schedule = {
   id: string;
   clientId: string;
   templateId: string | null;
-  sendAt: string;
+  send_at: string;
   variables?: Record<string, string>;
   status: "pending" | "processing" | "sent" | "failed";
   createdAt: string;

@@ -9,7 +9,7 @@ export default function Schedules() {
 
   useEffect(() => {
     fetchSchedules();
-  });
+  }, []);
 
   async function fetchSchedules() {
     try {
@@ -50,7 +50,7 @@ export default function Schedules() {
           cols={[
             { header: "Client", accessor: (row) => row.client_id },
             { header: "Status", accessor: (row) => row.status },
-            { header: "Time", accessor: (row) => row.sendAt },
+            { header: "Time", accessor: (row) => row.formattedSendAt },
           ]}
           data={schedules}
           onDelete={(id) => fetchDelete(id)}

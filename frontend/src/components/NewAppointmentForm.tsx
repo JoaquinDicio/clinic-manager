@@ -61,7 +61,7 @@ export default function NewAppointmentForm({
         ...prevAppointments,
         {
           ...newAppointment,
-          formatted_date: new Date(newAppointment.date).toLocaleDateString(),
+          formattedDate: new Date(newAppointment.date).toLocaleDateString(),
         },
       ]);
 

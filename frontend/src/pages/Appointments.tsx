@@ -75,7 +75,7 @@ export default function Appointments() {
             cols={[
               { header: "ID", accessor: (row) => row.id },
               { header: "Client", accessor: (row) => row.client.name },
-              { header: "Date", accessor: (row) => row.date },
+              { header: "Date", accessor: (row) => row.formattedDate },
               { header: "Time", accessor: (row) => row.time },
             ]}
             data={appointments}
