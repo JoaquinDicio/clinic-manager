@@ -1,57 +1,53 @@
-import { Request, Response } from "express"
-import clientsService from "../services/clients.service.js"
-import { AppError } from "../middlewares/errorMiddleware.js"
-import { CreateClientSchema, CreateClientDTO } from "../validators/client.validator.js"
+import { Request, Response } from "express";
+import clientsService from "../services/clients.service.js";
+import { AppError } from "../middlewares/errorMiddleware.js";
+import {
+  CreateClientSchema,
+  CreateClientDTO,
+} from "../validators/client.validator.js";
 
 const clientsController = {
+  async getAll(req: Request, res: Response) {
+    const search = req.query.search as string | undefined;
 
-    async getAll(req: Request, res: Response) {
+    const clients = await clientsService.getAll(search);
 
-        const clients = await clientsService.getAll()
+    res.status(200).json(clients);
+  },
 
-        res.status(200).json(clients)
+  async create(req: Request, res: Response) {
+    const result = CreateClientSchema.safeParse(req.body);
 
-    },
+    if (!result.success) {
+      throw new AppError(400, result.error.issues[0].message);
+    }
 
-    async create(req: Request, res: Response) {
+    const response = await clientsService.create({ ...result.data });
 
-        const result = CreateClientSchema.safeParse(req.body);
+    res.status(201).json(response);
+  },
 
-        if (!result.success) {
-            throw new AppError(400, result.error.issues[0].message)
-        }
+  async update(req: Request, res: Response) {
+    const { name, phone }: CreateClientDTO = req.body;
 
-        const response = await clientsService.create({ ...result.data })
+    const id = req.params.id as string;
 
-        res.status(201).json(response)
+    if (!id?.trim()) {
+      throw new AppError(400, "ID cannot be null");
+    }
 
-    },
+    const response = await clientsService.update({ name, phone }, id);
 
-    async update(req: Request, res: Response) {
+    return res.status(200).json(response);
+  },
 
-        const { name, phone }: CreateClientDTO = req.body
+  async delete(req: Request, res: Response) {
+    const id = req.params.id as string;
 
-        const id = req.params.id as string
+    await clientsService.delete(id);
 
-        if (!id?.trim()) {
-            throw new AppError(400, "ID cannot be null")
-        }
+    res.status(204).send();
+  },
+};
 
-        const response = await clientsService.update({ name, phone }, id)
-
-        return res.status(200).json(response)
-
-    },
-
-    async delete(req: Request, res: Response) {
-
-        const id = req.params.id as string
-
-        await clientsService.delete(id)
-
-        res.status(204).send()
-
-    },
-}
-
-export default clientsController
+export default clientsController;

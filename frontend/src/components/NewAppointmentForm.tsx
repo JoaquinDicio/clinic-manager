@@ -3,6 +3,7 @@ import { useState } from "react";
 import { postAppointment } from "../services/appointments.service";
 import { type AppointmentsWithClient } from "../types/appointments";
 import useTemplates from "../hooks/useTemplates";
+import ClientAutocomplete from "./ClientAutocomplete";
 
 const INITIAL_FORM: AppointmentForm = {
   clientId: "",
@@ -76,9 +77,11 @@ export default function NewAppointmentForm({
     }
   }
 
-  async function fetchSearchClient(e: React.FormEvent) {
-    e.preventDefault();
-    // TODO -> Crear un useClients() que se encargue de manejar la búsqueda de clientes
+  function selectClient(clientId: string) {
+    setForm((prev) => ({
+      ...prev,
+      clientId,
+    }));
   }
 
   return (
@@ -89,18 +92,9 @@ export default function NewAppointmentForm({
         action="/appointments"
         method="POST"
       >
-        <label htmlFor="clientId">Client ID</label>
-        <input
-          id="clientId"
-          name="clientId"
-          value={form.clientId}
-          onChange={handleChange}
-          placeholder="Client ID"
-          className="rounded p-2 w-full bg-white shadow-sm"
-          required
-        />
-        <button onClick={(e) => fetchSearchClient(e)}>Buscar</button>
-        <label htmlFor="date">Date</label>
+        <label htmlFor="time">Seleccionar Cliente</label>
+        <ClientAutocomplete onChange={selectClient} />
+        <label htmlFor="time">Date</label>
         <input
           id="date"
           name="date"

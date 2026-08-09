@@ -1,70 +1,77 @@
-import { CreateClientDTO } from "../validators/client.validator.js"
-import { AppError } from "../middlewares/errorMiddleware.js"
-import { pool } from "../db/connection.js"
-
+import { CreateClientDTO } from "../validators/client.validator.js";
+import { AppError } from "../middlewares/errorMiddleware.js";
+import { pool } from "../db/connection.js";
 
 export interface Client {
-    id: string
-    name: string
-    phone: string
-    created_at: Date
+  id: string;
+  name: string;
+  phone: string;
+  created_at: Date;
 }
 
 const clientsService = {
+  async getAll(search?: string): Promise<Client[]> {
+    if (search?.trim()) {
+      const result = await pool.query(
+        `
+            SELECT *
+            FROM clients
+            WHERE name ILIKE $1
+            ORDER BY created_at DESC
+            `,
+        [`%${search.trim()}%`],
+      );
 
-    async getAll(): Promise<Client[]> {
+      return result.rows;
+    }
 
-        const result = await pool.query(`
+    const result = await pool.query(`
             SELECT * FROM clients
             ORDER BY created_at DESC
-            `)
+            `);
 
-        return result.rows
+    return result.rows;
+  },
 
-    },
+  async create(data: CreateClientDTO): Promise<Client> {
+    const result = await pool.query(
+      `INSERT INTO clients (name, phone) VALUES ($1, $2) RETURNING *`,
+      [data.name, data.phone],
+    );
 
-    async create(data: CreateClientDTO): Promise<Client> {
+    return result.rows[0];
+  },
 
-        const result = await pool.query(
-            `INSERT INTO clients (name, phone) VALUES ($1, $2) RETURNING *`,
-            [data.name, data.phone]
-        )
-
-        return result.rows[0]
-    },
-
-    async update(newData: CreateClientDTO, id: string): Promise<Client> {
-
-        const result = await pool.query(
-            `
+  async update(newData: CreateClientDTO, id: string): Promise<Client> {
+    const result = await pool.query(
+      `
       UPDATE clients
       SET name = $1,
           phone = $2
       WHERE id = $3
       RETURNING *
       `,
-            [newData.name, newData.phone, id]
-        )
+      [newData.name, newData.phone, id],
+    );
 
-        if (result.rowCount === 0) {
-            throw new AppError(404, "Client not found")
-        }
-
-        return result.rows[0]
-    },
-
-    async delete(id: string): Promise<void> {
-
-        const result = await pool.query(
-            `DELETE FROM clients
-            WHERE id = $1`,
-            [id]
-        )
-
-        if (result.rowCount === 0) {
-            throw new AppError(404, "Client not found")
-        }
+    if (result.rowCount === 0) {
+      throw new AppError(404, "Client not found");
     }
-}
 
-export default clientsService
+    return result.rows[0];
+  },
+
+  async delete(id: string): Promise<void> {
+    const result = await pool.query(
+      `DELETE FROM clients
+            WHERE id = $1`,
+      [id],
+    );
+
+    if (result.rowCount === 0) {
+      throw new AppError(404, "Client not found");
+    }
+  },
+};
+
+export default clientsService;

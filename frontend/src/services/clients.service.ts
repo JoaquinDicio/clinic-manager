@@ -1,7 +1,16 @@
 import { type ClientForm } from "../types/clients";
 
-export async function getClients(): Promise<Response> {
-  return await fetch("http://localhost:8080/clients", {
+export async function getClients(search?: string): Promise<Response> {
+  if (search) {
+    return await fetch(`http://localhost:8080/clients?search=${search}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  return await fetch(`http://localhost:8080/clients?`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

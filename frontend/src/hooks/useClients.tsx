@@ -7,14 +7,20 @@ import {
 import { type Client } from "../types/db";
 import { type ClientForm } from "../types/clients";
 
-export default function useClients() {
+type Config = {
+  fetchOnMount?: boolean;
+};
+
+export default function useClients({ fetchOnMount = true }: Config = {}) {
   const [clients, setClients] = useState<Client[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchClients();
-  }, []);
+    if (fetchOnMount) {
+      fetchClients();
+    }
+  }, [fetchOnMount]);
 
   async function fetchClients() {
     try {
@@ -71,5 +77,16 @@ export default function useClients() {
     }
   }
 
-  return { clients, error, actionError, fetchDelete, addClient };
+  async function searchClients(search: string) {
+    try {
+      const response = await getClients(search);
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      console.error("Error:", err);
+      setError("Error fetching clients");
+    }
+  }
+
+  return { clients, error, actionError, fetchDelete, addClient, searchClients };
 }

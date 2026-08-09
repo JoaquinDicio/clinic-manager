@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Schedule } from "../types/db";
-import { getSchedules } from "../services/schedules.service";
+import { getSchedules, deleteSchedule } from "../services/schedules.service";
 import Table from "../components/Table";
 
 export default function Schedules() {
@@ -22,6 +22,21 @@ export default function Schedules() {
     }
   }
 
+  async function fetchDelete(scheduleId: string) {
+    try {
+      const response = await deleteSchedule(scheduleId);
+
+      if (response.ok) {
+        setSchedules((prevSchedules) =>
+          prevSchedules.filter((schedule) => schedule.id !== scheduleId),
+        );
+      }
+    } catch (err) {
+      setError("Error deleting schedule");
+      console.error("Error:", err);
+    }
+  }
+
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
@@ -38,6 +53,7 @@ export default function Schedules() {
             { header: "Time", accessor: (row) => row.sendAt },
           ]}
           data={schedules}
+          onDelete={(id) => fetchDelete(id)}
         />
       )}
     </div>
