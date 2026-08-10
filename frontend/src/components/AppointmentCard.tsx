@@ -51,21 +51,18 @@ export default function AppointmentCard({
           <p className="text-xs text-gray-500">{appointment.client.phone}</p>
         </div>
       </div>
-      {/* {appointment.treatment && (
-        <div className="mt-4 flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
-          <Stethoscope className="h-4 w-4 text-gray-500" />
 
-          <div>
-            <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
-              Tratamiento
-            </p>
+      <div className="mt-4 flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
+        <Stethoscope className="h-4 w-4 text-gray-500" />
 
-            <p className="text-sm font-medium text-gray-700">
-              {appointment.treatment}
-            </p>
-          </div>
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
+            Tratamiento
+          </p>
+
+          <p className="text-sm font-medium text-gray-700">Limpieza facial</p>
         </div>
-      )} */}
+      </div>
     </div>
   );
 }

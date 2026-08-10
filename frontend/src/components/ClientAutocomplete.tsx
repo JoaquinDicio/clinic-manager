@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import useClients from "../hooks/useClients";
 import { type Client } from "../types/db";
 
@@ -14,6 +14,7 @@ export default function ClientAutocomplete({ onChange }: Props) {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<Client[]>([]);
   const [open, setOpen] = useState(false);
+  const selectedClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
     if (search.trim().length < 2) {
@@ -22,6 +23,7 @@ export default function ClientAutocomplete({ onChange }: Props) {
     }
 
     const timeout = setTimeout(async () => {
+      if (selectedClientRef.current) return;
       const clients = await searchClients(search);
       setResults(clients);
       setOpen(true);
@@ -33,6 +35,7 @@ export default function ClientAutocomplete({ onChange }: Props) {
   }, [search]);
 
   function handleSelect(client: Client) {
+    selectedClientRef.current = client;
     setSearch(client.name);
     onChange(client.id);
     setOpen(false);
@@ -46,7 +49,7 @@ export default function ClientAutocomplete({ onChange }: Props) {
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
-          onChange("");
+          selectedClientRef.current = null;
         }}
         onFocus={() => {
           if (results.length > 0) {
