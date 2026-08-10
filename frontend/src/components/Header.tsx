@@ -12,7 +12,7 @@ export default function Header() {
   const { pathname } = useLocation();
 
   return (
-    <header className="h-16 bg-white border-b flex items-center justify-between px-6">
+    <header className="h-16 bg-white shadow-sm flex items-center justify-between px-6">
       <h1 className="font-semibold text-lg">
         {titles[pathname] ?? "Dashboard"}
       </h1>
