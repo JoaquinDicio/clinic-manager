@@ -5,7 +5,7 @@ import Appointments from "./pages/Appointments";
 import Templates from "./pages/Templates";
 import Schedules from "./pages/Schedules";
 import AppLayout from "./layout/AppLayout";
-
+import Doctors from "./pages/Doctors";
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +16,7 @@ function App() {
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/templates" element={<Templates />} />
           <Route path="/schedules" element={<Schedules />} />
+          <Route path="/doctors" element={<Doctors />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -21,7 +21,11 @@ const doctorsController = {
     res.status(201).json(response);
   },
 
-  async delete() {},
+  async delete(req: Request, res: Response) {
+    const id = req.params.id as string;
+    const response = await doctorsService.delete(id);
+    res.status(200).json(response);
+  },
 };
 
 export default doctorsController;

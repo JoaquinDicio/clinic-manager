@@ -6,7 +6,7 @@ import { type DoctorDTO } from "../types/doctor.js";
 export default function useDoctors() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [error, setError] = useState<string | null>(null);
-
+  // TODO-> USE ACTION ERROR TO DISPLAY ERRORS IN FORMS
   async function fetchDoctors() {
     try {
       const response = await doctorsService.getAll();
@@ -18,15 +18,20 @@ export default function useDoctors() {
   }
 
   async function addDoctor(doctor: DoctorDTO) {
+    setError(null); // reset error every time we add a new doctor
+
     try {
       const response = await doctorsService.create(doctor);
       const data = await response.json();
+      console.log("NEW DOCTOR", data);
 
       if (!response.ok) {
         throw new Error(data.message || "Error creating doctor");
       }
 
       setDoctors((prevDoctors) => [...prevDoctors, data]);
+
+      return data;
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

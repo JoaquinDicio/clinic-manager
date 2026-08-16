@@ -11,16 +11,15 @@ const doctorsService = {
   async create({ name, phone, email, specialty }: Doctor): Promise<Doctor> {
     const result = await pool.query(
       `
-      INSERT INTO doctors (name, phone, email, specialty)
-      VALUES ($1, $2, $3, $4)
-      RETURNING id
-      `,
+    INSERT INTO doctors (name, phone, email, specialty)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *
+    `,
       [name, phone, email, specialty],
     );
 
     return result.rows[0];
   },
-
   async delete(doctorId: string): Promise<void> {
     const result = await pool.query(`DELETE FROM doctors WHERE id = $1`, [
       doctorId,

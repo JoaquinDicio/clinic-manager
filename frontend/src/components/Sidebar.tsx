@@ -28,6 +28,10 @@ export default function Sidebar() {
         <Link to="/templates" className="px-3 py-2 rounded hover:bg-gray-800">
           Templates
         </Link>
+
+        <Link to="/doctors" className="px-3 py-2 rounded hover:bg-gray-800">
+          Doctors
+        </Link>
       </nav>
     </aside>
   );
