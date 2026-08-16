@@ -1,22 +1,19 @@
 import { z } from "zod";
 
 export const CreateScheduleSchema = z.object({
-    templateId: z
-        .string()
-        .uuid("Template ID inválido"),
+  templateId: z.string().uuid("Template ID inválido"),
 
-    clientId: z
-        .string()
-        .uuid("Client ID inválido"),
+  clientId: z.string().uuid("Client ID inválido"),
 
-    sendAt: z
-        .string()
-        .date("La fecha es inválida"),
+  appointmentId: z
+    .string()
+    .uuid("Appointment ID inválido")
+    .nullable()
+    .optional(),
 
-    variables: z
-        .record(z.string(), z.string())
-        .optional()
+  body: z.string().min(1, "El mensaje no puede estar vacío"),
+
+  sendAt: z.string().datetime("La fecha de envío es inválida"),
 });
 
-export type CreateScheduleDTO =
-    z.infer<typeof CreateScheduleSchema>;
+export type CreateScheduleDTO = z.infer<typeof CreateScheduleSchema>;

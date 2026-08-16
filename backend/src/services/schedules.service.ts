@@ -30,24 +30,37 @@ const schedulesService = {
       [data.templateId],
     );
 
-    if (template.rowCount === 0) throw new AppError(404, "Template not found");
+    if (template.rowCount === 0) {
+      throw new AppError(404, "Template not found");
+    }
 
     const client = await pool.query(`SELECT id FROM clients WHERE id = $1`, [
       data.clientId,
     ]);
 
-    if (client.rowCount === 0)
+    if (client.rowCount === 0) {
       throw new AppError(404, `Client ${data.clientId} not found`);
+    }
 
     const result = await pool.query(
-      `INSERT INTO schedules (client_id, template_id, send_at, variables, status)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING *`,
+      `
+      INSERT INTO schedules (
+        client_id,
+        appointment_id,
+        template_id,
+        body,
+        send_at,
+        status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
+    `,
       [
         data.clientId,
+        data.appointmentId ?? null,
         data.templateId,
+        data.body,
         data.sendAt,
-        data.variables ?? {},
         "pending",
       ],
     );

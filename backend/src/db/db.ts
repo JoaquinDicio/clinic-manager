@@ -1,5 +1,3 @@
-import client from "../config/whatsapp.js";
-
 export type Client = {
   id: string;
   name: string;

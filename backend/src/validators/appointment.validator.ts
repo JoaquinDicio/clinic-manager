@@ -1,31 +1,24 @@
 import { z } from "zod";
 
 export const CreateAppointmentSchema = z.object({
-    clientId: z
-        .string()
-        .uuid("Client ID inválido"),
+  clientId: z.string().uuid("Client ID inválido"),
 
-    date: z
-        .string()
-        .date("La fecha es inválida"),
+  doctorId: z.string().uuid("Doctor ID inválido").optional(),
 
-    time: z
-        .string()
-        .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Hora inválida"),
+  date: z.string().date("La fecha es inválida"),
 
-    reminder: z
-        .boolean(),
+  time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Hora inválida"),
 
-    templateId: z
-        .string()
-        .uuid("Template ID inválido")
-        .optional(),
+  reminder: z.boolean().optional(),
 
-    slots: z
-        .number()
-        .int("Debe ser un número entero")
-        .positive("Debe ser mayor a 0")
+  templateId: z.string().uuid("Template ID inválido").optional(),
+
+  slots: z
+    .number()
+    .int("Debe ser un número entero")
+    .positive("Debe ser mayor a 0"),
+
+  note: z.string().optional(),
 });
 
-export type CreateAppointmentDTO =
-    z.infer<typeof CreateAppointmentSchema>;
+export type CreateAppointmentDTO = z.infer<typeof CreateAppointmentSchema>;

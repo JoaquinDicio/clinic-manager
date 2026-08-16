@@ -3,35 +3,20 @@ import { pool } from "../db/connection.js";
 import whatsappService from "../services/whatsapp.service.js";
 import { BulkItem } from "../types/whatsapp.types.js";
 
-function resolveMessage(
-  body: string,
-  clientName: string,
-  variables: Record<string, string> = {},
-) {
-  return body
-    .replace("{{name}}", clientName)
-    .replace(/{{(\w+)}}/g, (_, key) => variables[key] ?? `{{${key}}}`);
-}
-
 async function dispatchPendingSchedules(): Promise<void> {
   const query = `
-    SELECT 
-  s.id,
-  s.variables,
-  t.body,
-  c.name,
-  c.phone,
-  a.date,
-  a.time
-FROM schedules s
-JOIN clients c ON c.id = s.client_id
-LEFT JOIN templates t ON t.id = s.template_id
-LEFT JOIN appointments a ON a.id = s.appointment_id
-WHERE s.status = 'pending'
-AND s.send_at <= NOW()
+    SELECT
+      s.id,
+      s.body,
+      c.phone
+    FROM schedules s
+    JOIN clients c ON c.id = s.client_id
+    WHERE s.status = 'pending'
+      AND s.send_at <= NOW()
   `;
 
   const result = await pool.query(query);
+
   if (result.rows.length === 0) return;
 
   const bulkWhatsapp: BulkItem[] = [];
@@ -39,11 +24,9 @@ AND s.send_at <= NOW()
   for (const row of result.rows) {
     if (!row.body) continue;
 
-    const message = resolveMessage(row.body, row.name, row.variables ?? {});
-
     bulkWhatsapp.push({
       phone: row.phone,
-      message,
+      message: row.body,
       scheduleId: row.id,
     });
   }
