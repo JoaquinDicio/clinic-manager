@@ -6,6 +6,8 @@ export interface AppointmentForm {
   time: string;
   reminder: boolean;
   templateId?: string;
+  doctorId: string;
+  note: string;
   slots: number;
 }
 

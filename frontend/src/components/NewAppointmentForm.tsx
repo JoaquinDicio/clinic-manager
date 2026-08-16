@@ -5,12 +5,13 @@ import {
   Bell,
   UserRound,
   Stethoscope,
+  FileText,
 } from "lucide-react";
-
 import { type AppointmentForm } from "../types/appointments";
 import { type AppointmentsWithClient } from "../types/appointments";
 import { postAppointment } from "../services/appointments.service";
 import useTemplates from "../hooks/useTemplates";
+import useDoctors from "../hooks/useDoctors.tsx";
 import ClientAutocomplete from "./ClientAutocomplete";
 
 const INITIAL_FORM: AppointmentForm = {
@@ -18,6 +19,8 @@ const INITIAL_FORM: AppointmentForm = {
   date: "",
   time: "",
   reminder: false,
+  doctorId: "",
+  note: "",
   slots: 1,
 };
 
@@ -29,13 +32,15 @@ export default function NewAppointmentForm({
   >;
 }) {
   const { templates, error: templatesError } = useTemplates();
-
+  const { doctors, error: doctorsError } = useDoctors();
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, type, value, checked } = e.target;
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) {
+    const { name, type, value, checked } = e.target as HTMLInputElement;
 
     setForm((prevForm) => ({
       ...prevForm,
@@ -104,7 +109,10 @@ export default function NewAppointmentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-xl rounded-xl p-2">
+    <form
+      onSubmit={handleSubmit}
+      className="w-full max-w-xl rounded-xl p-2 max-h-125 overflow-y-scroll"
+    >
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-900">Nuevo turno</h2>
@@ -123,6 +131,38 @@ export default function NewAppointmentForm({
           </label>
 
           <ClientAutocomplete onChange={selectClient} />
+        </div>
+
+        {/* Doctor */}
+        <div>
+          <label
+            htmlFor="templateId"
+            className="mb-2 text-sm font-medium text-gray-700 flex gap-3"
+          >
+            <Stethoscope className="h-4 w-4 text-gray-400" />
+            Doctor
+          </label>
+
+          <select
+            id="doctorId"
+            name="doctorId"
+            value={form.doctorId || ""}
+            onChange={handleSelectChange}
+            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-gray-400 focus:bg-white focus:ring-2 focus:ring-gray-100"
+            required
+          >
+            <option value="">Seleccioná un doctor</option>
+
+            {doctors.map((doctor) => (
+              <option key={doctor.id} value={doctor.id}>
+                {doctor.name}
+              </option>
+            ))}
+          </select>
+
+          {templatesError && (
+            <p className="mt-2 text-xs text-red-500">{doctorsError}</p>
+          )}
         </div>
 
         {/* Fecha y hora */}
@@ -193,6 +233,26 @@ export default function NewAppointmentForm({
               bloque(s) de 30 minutos
             </span>
           </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="note"
+            className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700"
+          >
+            <FileText className="h-4 w-4 text-gray-400" />
+            Detalle del turno
+          </label>
+
+          <textarea
+            id="note"
+            name="note"
+            value={form.note}
+            onChange={handleChange}
+            rows={3}
+            placeholder="Ej. Limpieza dental, extracción, control..."
+            className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-gray-400 focus:bg-white focus:ring-2 focus:ring-gray-100"
+          />
         </div>
 
         {/* Recordatorio */}

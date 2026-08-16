@@ -16,16 +16,19 @@ function resolveMessage(
 async function dispatchPendingSchedules(): Promise<void> {
   const query = `
     SELECT 
-      s.id,
-      s.variables,
-      t.body,
-      c.name,
-      c.phone
-    FROM schedules s
-    JOIN clients c ON c.id = s.client_id
-    LEFT JOIN templates t ON t.id = s.template_id
-    WHERE s.status = 'pending'
-    AND s.send_at <= NOW()
+  s.id,
+  s.variables,
+  t.body,
+  c.name,
+  c.phone,
+  a.date,
+  a.time
+FROM schedules s
+JOIN clients c ON c.id = s.client_id
+LEFT JOIN templates t ON t.id = s.template_id
+LEFT JOIN appointments a ON a.id = s.appointment_id
+WHERE s.status = 'pending'
+AND s.send_at <= NOW()
   `;
 
   const result = await pool.query(query);

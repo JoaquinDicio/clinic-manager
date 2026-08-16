@@ -4,3 +4,22 @@
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
