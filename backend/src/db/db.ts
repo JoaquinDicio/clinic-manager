@@ -25,13 +25,24 @@ export type Schedule = {
   createdAt: string;
 };
 
+export type Doctor = {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  specialty: string | null;
+  createdAt: string;
+};
+
 export type Appointment = {
   id: string;
   clientId: string;
+  doctorId: string | null;
   date: string;
   time: string;
   slots: number;
   reminder: boolean;
+  note: string | null;
   templateId?: string | null;
   createdAt: string;
 };

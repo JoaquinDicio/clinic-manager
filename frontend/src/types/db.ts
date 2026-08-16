@@ -15,23 +15,38 @@ export type Template = {
 
 export type Schedule = {
   id: string;
-  client_id: string;
-  template_id: string | null;
+  clientId: string;
+  templateId: string | null;
   send_at: string;
-  formattedSendAt: string;
   variables?: Record<string, string>;
   status: "pending" | "processing" | "sent" | "failed";
   createdAt: string;
 };
 
+export type Doctor = {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  specialty: string | null;
+  createdAt: string;
+};
+
 export type Appointment = {
   id: string;
-  client_id: string;
+  clientId: string;
+  doctorId: string | null;
   date: string;
   time: string;
   slots: number;
   reminder: boolean;
+  note: string | null;
+  templateId?: string | null;
   createdAt: string;
+};
+
+export type AppointmentWithClient = Appointment & {
+  client: Client;
 };
 
 export type DBSchema = {

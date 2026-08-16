@@ -4,6 +4,7 @@
 
 DROP TABLE IF EXISTS appointments CASCADE;
 DROP TABLE IF EXISTS schedules CASCADE;
+DROP TABLE IF EXISTS doctors CASCADE;
 DROP TABLE IF EXISTS templates CASCADE;
 DROP TABLE IF EXISTS clients CASCADE;
 
@@ -37,6 +38,19 @@ CREATE TABLE templates (
 );
 
 -- =========================
+-- DOCTORS
+-- =========================
+
+CREATE TABLE doctors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    phone TEXT,
+    email TEXT,
+    specialty TEXT,
+    created_at timestamptz DEFAULT NOW()
+);
+
+-- =========================
 -- SCHEDULES
 -- Cada schedule = 1 mensaje a 1 cliente
 -- =========================
@@ -57,12 +71,12 @@ CREATE TABLE schedules (
     send_at timestamptz NOT NULL,
 
     status TEXT DEFAULT 'pending'
-        CHECK (status IN ('pending','processing','sent','failed')),
+        CHECK (status IN ('pending', 'processing', 'sent', 'failed')),
 
     created_at timestamptz DEFAULT NOW()
 );
 
--- índice para buscar recordatorios pendientes rápido
+-- Índice para buscar recordatorios pendientes rápidamente
 CREATE INDEX idx_schedules_pending_send_at
 ON schedules (send_at)
 WHERE status = 'pending';
@@ -79,6 +93,10 @@ CREATE TABLE appointments (
         REFERENCES clients(id)
         ON DELETE CASCADE,
 
+    doctor_id UUID
+        REFERENCES doctors(id)
+        ON DELETE SET NULL,
+
     date DATE NOT NULL,
     time TIME NOT NULL,
 
@@ -87,9 +105,15 @@ CREATE TABLE appointments (
 
     reminder BOOLEAN DEFAULT true,
 
+    note TEXT,
+
     created_at timestamptz DEFAULT NOW()
 );
 
--- índice útil para consultas de agenda
+-- Índice útil para consultas de agenda
 CREATE INDEX idx_appointments_date_time
 ON appointments (date, time);
+
+-- Índice para consultas por doctor
+CREATE INDEX idx_appointments_doctor_id
+ON appointments (doctor_id);
