@@ -13,6 +13,8 @@ export interface AppointmentForm {
 
 export interface AppointmentsWithClient extends Appointment {
   formattedDate: string;
+  formattedTime: string;
+  formattedEndTime: string;
   client: {
     id: string;
     name: string;

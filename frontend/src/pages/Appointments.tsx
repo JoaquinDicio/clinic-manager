@@ -1,50 +1,13 @@
 import NewAppointmentForm from "../components/NewAppointmentForm.tsx";
-import {
-  getAppointments,
-  deleteAppointment,
-} from "../services/appointments.service";
-import { useState, useEffect } from "react";
 import ModalContainer from "../components/ModalContainer";
-import { type AppointmentsWithClient } from "../types/appointments";
-import Table from "../components/Table";
+import AppointmentCard from "../components/AppointmentCard";
+import useAppointments from "../hooks/useAppointments";
+import { useState } from "react";
 
 export default function Appointments() {
-  const [appointments, setAppointments] = useState<AppointmentsWithClient[]>(
-    [],
-  );
-  const [error, setError] = useState<string | null>(null);
-  const [modal, setModal] = useState<boolean>(false);
-
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
-
-  async function fetchAppointments() {
-    try {
-      const response = await getAppointments();
-      setAppointments(response);
-    } catch (err) {
-      console.error("Error:", err);
-      setError("Error fetching appointments");
-    }
-  }
-
-  async function fetchDelete(appointmentId: string) {
-    try {
-      const response = await deleteAppointment(appointmentId);
-
-      if (response.ok) {
-        setAppointments((prevAppointments) =>
-          prevAppointments.filter(
-            (appointment) => appointment.id !== appointmentId,
-          ),
-        );
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      setError("Error deleting appointment");
-    }
-  }
+  const [modal, setModal] = useState(false);
+  const { appointments, error, fetchDelete, addAppointment } =
+    useAppointments();
 
   function handleModal() {
     setModal(!modal);
@@ -64,23 +27,18 @@ export default function Appointments() {
       </button>
       {modal && (
         <ModalContainer closeFunction={handleModal}>
-          <NewAppointmentForm setAppointments={setAppointments} />
+          <NewAppointmentForm addAppointment={addAppointment} />
         </ModalContainer>
       )}
       <div className="pt-10">
         {appointments.length == 0 ? (
           <i>There is no appointments to show.</i>
         ) : (
-          <Table
-            cols={[
-              { header: "ID", accessor: (row) => row.id },
-              { header: "Client", accessor: (row) => row.client.name },
-              { header: "Date", accessor: (row) => row.formattedDate },
-              { header: "Time", accessor: (row) => row.time },
-            ]}
-            data={appointments}
-            onDelete={(id) => fetchDelete(id)}
-          />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {appointments.map((appointment) => (
+              <AppointmentCard key={appointment.id} appointment={appointment} />
+            ))}
+          </div>
         )}
       </div>
     </div>

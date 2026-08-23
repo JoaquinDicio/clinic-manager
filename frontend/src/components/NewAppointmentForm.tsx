@@ -8,8 +8,7 @@ import {
   FileText,
 } from "lucide-react";
 import { type AppointmentForm } from "../types/appointments";
-import { type AppointmentsWithClient } from "../types/appointments";
-import { postAppointment } from "../services/appointments.service";
+import { type Appointment } from "../types/db";
 import useTemplates from "../hooks/useTemplates";
 import useDoctors from "../hooks/useDoctors.tsx";
 import ClientAutocomplete from "./ClientAutocomplete";
@@ -24,13 +23,11 @@ const INITIAL_FORM: AppointmentForm = {
   slots: 1,
 };
 
-export default function NewAppointmentForm({
-  setAppointments,
-}: {
-  setAppointments: React.Dispatch<
-    React.SetStateAction<AppointmentsWithClient[]>
-  >;
-}) {
+interface Props {
+  addAppointment: (appointment: AppointmentForm) => Promise<Appointment>;
+}
+
+export default function NewAppointmentForm({ addAppointment }: Props) {
   const { templates, error: templatesError } = useTemplates();
   const { doctors, error: doctorsError } = useDoctors();
   const [error, setError] = useState<string | null>(null);
@@ -62,43 +59,16 @@ export default function NewAppointmentForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     setError(null);
     setLoading(true);
 
-    try {
-      const response = await postAppointment(form);
+    const newAppointment = await addAppointment(form);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al crear el turno");
-      }
-
-      const newAppointment = await response.json();
-
-      setAppointments((prevAppointments) => [
-        ...prevAppointments,
-        {
-          ...newAppointment,
-          formattedDate: new Date(newAppointment.date).toLocaleDateString(
-            "es-AR",
-          ),
-          formattedTime: newAppointment.time.slice(0, 5),
-        },
-      ]);
-
+    if (newAppointment) {
       setForm(INITIAL_FORM);
-    } catch (error) {
-      console.error(error);
-
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Error al crear el turno");
-      }
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   }
 
   function selectClient(clientId: string) {
