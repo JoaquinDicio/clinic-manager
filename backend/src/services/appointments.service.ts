@@ -141,7 +141,10 @@ const appointmentsService = {
         throw new AppError(404, "Template not found in DB");
       }
 
-      const message = resolveMessage(template.rows[0].body, appointmentData);
+      const message = resolveMessage(template.rows[0].body, {
+        formatted_date: new Date(appointmentData.date).toLocaleDateString(),
+        ...appointmentData,
+      });
 
       const [year, month, day] = date.split("-").map(Number);
       const [hour, minute] = time.split(":").map(Number);
