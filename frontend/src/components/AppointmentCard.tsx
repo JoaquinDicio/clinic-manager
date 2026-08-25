@@ -1,11 +1,22 @@
 import { Clock, UserRound, Stethoscope, Trash2 } from "lucide-react";
 import { type AppointmentWithClient } from "../types/appointments";
+
 interface Props {
   appointment: AppointmentWithClient;
   onDelete?: (appointmentId: string) => Promise<void>;
 }
 
 export default function AppointmentCard({ appointment, onDelete }: Props) {
+  const today = new Date();
+
+  const todayString = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  const isToday = appointment.date.toString().slice(0, 10) === todayString;
+
   async function handleDelete() {
     if (!onDelete) return;
 
@@ -19,10 +30,7 @@ export default function AppointmentCard({ appointment, onDelete }: Props) {
   }
 
   return (
-    <div
-      key={appointment.id}
-      className="group rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-gray-300 hover:shadow-md"
-    >
+    <div className="group rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-gray-300 hover:shadow-md">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -44,9 +52,11 @@ export default function AppointmentCard({ appointment, onDelete }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
-            Hoy
-          </span>
+          {isToday && (
+            <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
+              Hoy
+            </span>
+          )}
 
           {onDelete && (
             <button
@@ -80,6 +90,7 @@ export default function AppointmentCard({ appointment, onDelete }: Props) {
         </div>
       </div>
 
+      {/* Treatment */}
       <div className="mt-4 flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
         <Stethoscope className="h-4 w-4 text-gray-500" />
 
