@@ -51,15 +51,8 @@ export default function useAppointments() {
     setError(null); // reset error every time we add a new appointment
 
     try {
-      const response = await postAppointment(appointment);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Error creating appointment");
-      }
-
+      const data = await postAppointment(appointment);
       setAppointments((prevAppointments) => [...prevAppointments, data]);
-
       return data;
     } catch (err) {
       if (err instanceof Error) {
