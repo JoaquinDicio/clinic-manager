@@ -1,11 +1,11 @@
 import {
   type AppointmentForm,
-  type AppointmentsWithClient,
+  type AppointmentWithClient,
 } from "../types/appointments";
 
 const formatAppointment = (
-  appointment: AppointmentsWithClient,
-): AppointmentsWithClient => {
+  appointment: AppointmentWithClient,
+): AppointmentWithClient => {
   const [hours, minutes] = appointment.time
     .toString()
     .slice(0, 5)
@@ -34,7 +34,7 @@ const formatAppointment = (
 
 export async function postAppointment(
   formData: AppointmentForm,
-): Promise<AppointmentsWithClient> {
+): Promise<AppointmentWithClient> {
   const response = await fetch("http://localhost:8080/appointments", {
     method: "POST",
     headers: {
@@ -52,14 +52,14 @@ export async function postAppointment(
   return formatAppointment(data);
 }
 
-export async function getAppointments(): Promise<AppointmentsWithClient[]> {
+export async function getAppointments(): Promise<AppointmentWithClient[]> {
   const response = await fetch(
     "http://localhost:8080/appointments?include=client",
   );
 
   const data = await response.json();
 
-  return data.map((appointment: AppointmentsWithClient) =>
+  return data.map((appointment: AppointmentWithClient) =>
     formatAppointment(appointment),
   );
 }

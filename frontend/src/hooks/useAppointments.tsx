@@ -1,5 +1,5 @@
 import {
-  type AppointmentsWithClient,
+  type AppointmentWithClient,
   type AppointmentForm,
 } from "../types/appointments";
 import { useState, useEffect } from "react";
@@ -10,9 +10,7 @@ import {
 } from "../services/appointments.service";
 
 export default function useAppointments() {
-  const [appointments, setAppointments] = useState<AppointmentsWithClient[]>(
-    [],
-  );
+  const [appointments, setAppointments] = useState<AppointmentWithClient[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -64,5 +62,5 @@ export default function useAppointments() {
     }
   }
 
-  return { appointments, error, fetchDelete, addAppointment };
+  return { appointments, error, fetchDelete, addAppointment, actionError };
 }

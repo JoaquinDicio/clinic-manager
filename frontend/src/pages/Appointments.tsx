@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function Appointments() {
   const [modal, setModal] = useState(false);
-  const { appointments, error, fetchDelete, addAppointment } =
+  const { appointments, error, fetchDelete, addAppointment, actionError } =
     useAppointments();
 
   function handleModal() {
@@ -27,7 +27,10 @@ export default function Appointments() {
       </button>
       {modal && (
         <ModalContainer closeFunction={handleModal}>
-          <NewAppointmentForm addAppointment={addAppointment} />
+          <NewAppointmentForm
+            error={actionError}
+            addAppointment={addAppointment}
+          />
         </ModalContainer>
       )}
       <div className="pt-10">
@@ -36,7 +39,11 @@ export default function Appointments() {
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {appointments.map((appointment) => (
-              <AppointmentCard key={appointment.id} appointment={appointment} />
+              <AppointmentCard
+                key={appointment.id}
+                appointment={appointment}
+                onDelete={() => fetchDelete(appointment.id)}
+              />
             ))}
           </div>
         )}

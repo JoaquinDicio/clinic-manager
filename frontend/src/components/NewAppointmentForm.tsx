@@ -7,8 +7,8 @@ import {
   Stethoscope,
   FileText,
 } from "lucide-react";
+import { type AppointmentWithClient } from "../types/appointments";
 import { type AppointmentForm } from "../types/appointments";
-import { type Appointment } from "../types/db";
 import useTemplates from "../hooks/useTemplates";
 import useDoctors from "../hooks/useDoctors.tsx";
 import ClientAutocomplete from "./ClientAutocomplete";
@@ -24,13 +24,15 @@ const INITIAL_FORM: AppointmentForm = {
 };
 
 interface Props {
-  addAppointment: (appointment: AppointmentForm) => Promise<Appointment>;
+  addAppointment: (
+    appointment: AppointmentForm,
+  ) => Promise<AppointmentWithClient | undefined>;
+  error: string | null;
 }
 
-export default function NewAppointmentForm({ addAppointment }: Props) {
+export default function NewAppointmentForm({ addAppointment, error }: Props) {
   const { templates, error: templatesError } = useTemplates();
   const { doctors, error: doctorsError } = useDoctors();
-  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +61,6 @@ export default function NewAppointmentForm({ addAppointment }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
     setLoading(true);
 
     const newAppointment = await addAppointment(form);

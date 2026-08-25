@@ -1,8 +1,8 @@
-[] Al generar el appointment, debe retornar el appointment con el cliente
+[OK] Al generar el appointment, debe retornar el appointment con el cliente
 
-[] AppointmentCard tiene que tener un boton para editar y borrar
+[IN_PROGRESS] AppointmentCard tiene que tener un boton para editar y borrar
 
-[] Modificar el schemda de la base de datos para que incluya los tratamientos como una tabla separada
+[] Modificar el schema de la base de datos para que incluya los tratamientos como una tabla separada
 
 [] Crear una page para los tratamientos
 

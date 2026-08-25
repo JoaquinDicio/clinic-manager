@@ -1,11 +1,23 @@
-import { type AppointmentDashboard } from "../types/dashboard";
-import { Clock, UserRound, Stethoscope } from "lucide-react";
+import { Clock, UserRound, Stethoscope, Trash2 } from "lucide-react";
+import { type AppointmentWithClient } from "../types/appointments";
+interface Props {
+  appointment: AppointmentWithClient;
+  onDelete?: (appointmentId: string) => Promise<void>;
+}
 
-export default function AppointmentCard({
-  appointment,
-}: {
-  appointment: AppointmentDashboard;
-}) {
+export default function AppointmentCard({ appointment, onDelete }: Props) {
+  async function handleDelete() {
+    if (!onDelete) return;
+
+    const confirmed = window.confirm(
+      `¿Eliminar el turno de ${appointment.client.name}?`,
+    );
+
+    if (!confirmed) return;
+
+    await onDelete(appointment.id);
+  }
+
   return (
     <div
       key={appointment.id}
@@ -31,12 +43,28 @@ export default function AppointmentCard({
           </div>
         </div>
 
-        <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
-          Hoy
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
+            Hoy
+          </span>
+
+          {onDelete && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              aria-label="Eliminar turno"
+              title="Eliminar turno"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-gray-400 opacity-0 transition hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
+
       {/* Divider */}
       <div className="my-4 border-t border-gray-100" />
+
       {/* Client */}
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">

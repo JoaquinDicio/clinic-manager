@@ -11,7 +11,7 @@ export interface AppointmentForm {
   slots: number;
 }
 
-export interface AppointmentsWithClient extends Appointment {
+export interface AppointmentWithClient extends Appointment {
   formattedDate: string;
   formattedTime: string;
   formattedEndTime: string;

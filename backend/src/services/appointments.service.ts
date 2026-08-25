@@ -5,15 +5,6 @@ import { CreateAppointmentDTO } from "../validators/appointment.validator.js";
 import { pool } from "../db/connection.js";
 import resolveMessage from "../utils/resolveMessage.js";
 
-interface AppointmentsWithClient extends Appointment {
-  client: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string;
-  };
-}
-
 const appointmentsService = {
   async get(): Promise<Appointment[]> {
     const result = await pool.query(
@@ -22,7 +13,7 @@ const appointmentsService = {
     return result.rows;
   },
 
-  async getAppointmentsWithClient(): Promise<AppointmentsWithClient[]> {
+  async getAppointmentsWithClient(): Promise<AppointmentWithClient[]> {
     const result = await pool.query(`
     SELECT
       a.id,
