@@ -19,6 +19,8 @@ export const CreateAppointmentSchema = z.object({
     .positive("Debe ser mayor a 0"),
 
   note: z.string().optional(),
+
+  treatments: z.array(z.string().uuid("Treatment ID inválido")).default([]),
 });
 
 export type CreateAppointmentDTO = z.infer<typeof CreateAppointmentSchema>;

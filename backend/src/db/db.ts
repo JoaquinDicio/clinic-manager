@@ -63,6 +63,12 @@ export type AppointmentWithClient = Appointment & {
   client: Client;
 };
 
+export type AppointmentFullInfo = Appointment & {
+  client: Client;
+  doctor: Doctor | null;
+  treatments: Treatment[];
+};
+
 export type AppointmentWithTreatments = Appointment & {
   treatments: Treatment[];
 };

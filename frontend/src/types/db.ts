@@ -32,6 +32,15 @@ export type Doctor = {
   createdAt: string;
 };
 
+export type Treatment = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number | null;
+  active: boolean;
+  createdAt: string;
+};
+
 export type Appointment = {
   id: string;
   clientId: string;
@@ -45,8 +54,20 @@ export type Appointment = {
   createdAt: string;
 };
 
+export type AppointmentTreatment = {
+  appointmentId: string;
+  treatmentId: string;
+  price: number | null;
+};
+
 export type AppointmentWithClient = Appointment & {
   client: Client;
+};
+
+export type AppointmentFullInfo = Appointment & {
+  client: Client;
+  doctor: Doctor | null;
+  treatments: Treatment[];
 };
 
 export type DBSchema = {
@@ -54,4 +75,6 @@ export type DBSchema = {
   templates: Template[];
   schedules: Schedule[];
   appointments: Appointment[];
+  treatments: Treatment[];
+  appointmentTreatments: AppointmentTreatment[];
 };

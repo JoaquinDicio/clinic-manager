@@ -1,8 +1,17 @@
 import schedulesService from "./schedules.service.js";
-import { Appointment, AppointmentWithClient } from "../db/db.js";
+import appointmentTreatmentsService from "./appointmentTreatment.service.js";
+import {
+  Appointment,
+  AppointmentFullInfo,
+  AppointmentWithClient,
+} from "../db/db.js";
+
 import { AppError } from "../middlewares/errorMiddleware.js";
+
 import { CreateAppointmentDTO } from "../validators/appointment.validator.js";
+
 import { pool } from "../db/connection.js";
+
 import resolveMessage from "../utils/resolveMessage.js";
 
 const appointmentsService = {
@@ -10,42 +19,39 @@ const appointmentsService = {
     const result = await pool.query(
       "SELECT * FROM appointments ORDER BY date DESC",
     );
+
     return result.rows;
   },
 
   async getAppointmentsWithClient(): Promise<AppointmentWithClient[]> {
     const result = await pool.query(`
-    SELECT
-      a.id,
-      a.client_id AS "clientId",
-      a.date,
-      a.time,
-      a.slots,
-      a.reminder,
-      a.created_at AS "createdAt",
+      SELECT
+        a.id,
+        a.client_id AS "clientId",
+        a.date,
+        a.time,
+        a.slots,
+        a.reminder,
+        a.created_at AS "createdAt",
 
-      json_build_object(
-        'id', c.id,
-        'name', c.name,
-        'phone', c.phone,
-        'createdAt', c.created_at
-      ) AS client
+        json_build_object(
+          'id', c.id,
+          'name', c.name,
+          'phone', c.phone,
+          'createdAt', c.created_at
+        ) AS client
 
-    FROM appointments a
-    INNER JOIN clients c
-      ON c.id = a.client_id
-    ORDER BY a.date DESC
-  `);
+      FROM appointments a
 
-    const appointments = result.rows.map((appointment) => ({
-      ...appointment,
-      formattedDate: appointment.date.toLocaleDateString(),
-    }));
+      INNER JOIN clients c
+        ON c.id = a.client_id
 
-    return appointments;
+      ORDER BY a.date DESC
+    `);
+
+    return result.rows;
   },
-
-  async create(data: CreateAppointmentDTO): Promise<AppointmentWithClient> {
+  async create(data: CreateAppointmentDTO): Promise<AppointmentFullInfo> {
     const {
       clientId,
       date,
@@ -55,6 +61,7 @@ const appointmentsService = {
       templateId,
       doctorId,
       note,
+      treatments,
     } = data;
 
     const client = await pool.query("SELECT id FROM clients WHERE id = $1", [
@@ -67,53 +74,90 @@ const appointmentsService = {
 
     const result = await pool.query(
       `
-      INSERT INTO appointments (
-        client_id,
-        date,
-        time,
-        reminder,
-        slots,
-        doctor_id,
-        note
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING id
+    INSERT INTO appointments (
+      client_id,
+      date,
+      time,
+      reminder,
+      slots,
+      doctor_id,
+      note
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING id
     `,
       [clientId, date, time, reminder ?? true, slots, doctorId, note],
     );
 
     const appointmentId = result.rows[0].id;
 
+    await appointmentTreatmentsService.create(appointmentId, treatments);
+
+    /*
+     * Obtenemos la información completa del appointment.
+     */
     const appointment = await pool.query(
       `
-      SELECT
-        a.id,
-        a.client_id AS "clientId",
-        a.doctor_id AS "doctorId",
-        a.date,
-        a.time,
-        a.slots,
-        a.reminder,
-        a.note,
-        a.created_at AS "createdAt",
+    SELECT
+      a.id,
+      a.client_id AS "clientId",
+      a.doctor_id AS "doctorId",
+      a.date,
+      a.time,
+      a.slots,
+      a.reminder,
+      a.note,
+      a.created_at AS "createdAt",
 
-        c.name,
-        c.phone,
+      json_build_object(
+        'id', c.id,
+        'name', c.name,
+        'phone', c.phone,
+        'createdAt', c.created_at
+      ) AS client,
 
-        d.name AS "doctorName",
-        d.phone AS "doctorPhone",
-        d.email AS "doctorEmail",
-        d.specialty AS "doctorSpecialty"
+      CASE
+        WHEN d.id IS NOT NULL THEN
+          json_build_object(
+            'id', d.id,
+            'name', d.name,
+            'phone', d.phone,
+            'email', d.email,
+            'specialty', d.specialty,
+            'createdAt', d.created_at
+          )
+        ELSE NULL
+      END AS doctor,
 
-      FROM appointments a
+      COALESCE(
+        (
+          SELECT json_agg(
+            json_build_object(
+              'id', t.id,
+              'name', t.name,
+              'description', t.description,
+              'price', at.price,
+              'active', t.active,
+              'createdAt', t.created_at
+            )
+          )
+          FROM appointment_treatments at
+          INNER JOIN treatments t
+            ON t.id = at.treatment_id
+          WHERE at.appointment_id = a.id
+        ),
+        '[]'
+      ) AS treatments
 
-      JOIN clients c
-        ON c.id = a.client_id
+    FROM appointments a
 
-      LEFT JOIN doctors d
-        ON d.id = a.doctor_id
+    INNER JOIN clients c
+      ON c.id = a.client_id
 
-      WHERE a.id = $1
+    LEFT JOIN doctors d
+      ON d.id = a.doctor_id
+
+    WHERE a.id = $1
     `,
       [appointmentId],
     );
@@ -145,6 +189,7 @@ const appointmentsService = {
       );
 
       const reminderDate = new Date(appointmentDate);
+
       reminderDate.setUTCDate(reminderDate.getUTCDate() - 1);
 
       if (reminderDate > new Date()) {
@@ -158,14 +203,7 @@ const appointmentsService = {
       }
     }
 
-    return {
-      ...appointmentData,
-      client: {
-        id: appointmentData.clientId,
-        name: appointmentData.name,
-        phone: appointmentData.phone,
-      },
-    };
+    return appointmentData;
   },
 
   async update(
@@ -176,15 +214,15 @@ const appointmentsService = {
 
     const result = await pool.query(
       `
-        UPDATE appointments
-        SET
-            client_id = COALESCE($1, client_id),
-            date = COALESCE($2, date),
-            time = COALESCE($3, time),
-            reminder = COALESCE($4, reminder)
-        WHERE id = $5
-        RETURNING *
-        `,
+      UPDATE appointments
+      SET
+        client_id = COALESCE($1, client_id),
+        date = COALESCE($2, date),
+        time = COALESCE($3, time),
+        reminder = COALESCE($4, reminder)
+      WHERE id = $5
+      RETURNING *
+      `,
       [clientId, date, time, reminder, id],
     );
 
