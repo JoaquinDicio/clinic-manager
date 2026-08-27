@@ -3,7 +3,9 @@
 -- =========================
 
 DROP TABLE IF EXISTS schedules CASCADE;
+DROP TABLE IF EXISTS appointment_treatments CASCADE;
 DROP TABLE IF EXISTS appointments CASCADE;
+DROP TABLE IF EXISTS treatments CASCADE;
 DROP TABLE IF EXISTS doctors CASCADE;
 DROP TABLE IF EXISTS templates CASCADE;
 DROP TABLE IF EXISTS clients CASCADE;
@@ -20,9 +22,11 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE clients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
     name TEXT NOT NULL,
     phone TEXT NOT NULL,
-    created_at timestamptz DEFAULT NOW()
+
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- =========================
@@ -31,10 +35,12 @@ CREATE TABLE clients (
 
 CREATE TABLE templates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
     name TEXT NOT NULL,
     body TEXT NOT NULL,
     variables TEXT[],
-    created_at timestamptz DEFAULT NOW()
+
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- =========================
@@ -43,11 +49,13 @@ CREATE TABLE templates (
 
 CREATE TABLE doctors (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
     name TEXT NOT NULL,
     phone TEXT,
     email TEXT,
     specialty TEXT,
-    created_at timestamptz DEFAULT NOW()
+
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- =========================
@@ -73,10 +81,9 @@ CREATE TABLE appointments (
         CHECK (slots > 0),
 
     reminder BOOLEAN DEFAULT true,
-
     note TEXT,
 
-    created_at timestamptz DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Índice útil para consultas de agenda
@@ -86,6 +93,54 @@ ON appointments (date, time);
 -- Índice para consultas por doctor
 CREATE INDEX idx_appointments_doctor_id
 ON appointments (doctor_id);
+
+-- =========================
+-- TREATMENTS
+-- Catálogo de tratamientos
+-- =========================
+
+CREATE TABLE treatments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    name TEXT NOT NULL,
+    description TEXT,
+
+    price NUMERIC(10, 2),
+
+    active BOOLEAN DEFAULT true,
+
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =========================
+-- APPOINTMENT TREATMENTS
+-- Relación entre appointments y treatments
+-- =========================
+
+CREATE TABLE appointment_treatments (
+    appointment_id UUID NOT NULL
+        REFERENCES appointments(id)
+        ON DELETE CASCADE,
+
+    treatment_id UUID NOT NULL
+        REFERENCES treatments(id)
+        ON DELETE RESTRICT,
+
+    quantity INTEGER NOT NULL DEFAULT 1
+        CHECK (quantity > 0),
+
+    price NUMERIC(10, 2),
+
+    PRIMARY KEY (appointment_id, treatment_id)
+);
+
+-- Índice para búsquedas por appointment
+CREATE INDEX idx_appointment_treatments_appointment_id
+ON appointment_treatments (appointment_id);
+
+-- Índice para búsquedas por treatment
+CREATE INDEX idx_appointment_treatments_treatment_id
+ON appointment_treatments (treatment_id);
 
 -- =========================
 -- SCHEDULES
@@ -110,14 +165,13 @@ CREATE TABLE schedules (
 
     body TEXT NOT NULL,
 
-    send_at timestamptz NOT NULL,
+    send_at TIMESTAMPTZ NOT NULL,
 
     status TEXT DEFAULT 'pending'
         CHECK (status IN ('pending', 'processing', 'sent', 'failed')),
 
-    created_at timestamptz DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 
 -- Índice para buscar recordatorios pendientes rápidamente
 CREATE INDEX idx_schedules_pending_send_at

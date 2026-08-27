@@ -2,9 +2,9 @@
 
 [OK] AppointmentCard tiene que tener un boton para editar y borrar
 
-[] Modificar el schema de la base de datos para que incluya los tratamientos como una tabla separada
+[IN_PROGRESS] Modificar el schema de la base de datos para que incluya los tratamientos como una tabla separada
 
-[] Sacar el indicador de hoy de la dashboard
+[OK] Sacar el indicador de hoy de la dashboard
 
 [] Crear una page para los tratamientos
 
