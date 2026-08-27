@@ -124,11 +124,8 @@ CREATE TABLE appointment_treatments (
 
     treatment_id UUID NOT NULL
         REFERENCES treatments(id)
-        ON DELETE RESTRICT,
-
-    quantity INTEGER NOT NULL DEFAULT 1
-        CHECK (quantity > 0),
-
+        ON DELETE RESTRICT
+        
     price NUMERIC(10, 2),
 
     PRIMARY KEY (appointment_id, treatment_id)

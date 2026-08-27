@@ -56,7 +56,6 @@ export type Appointment = {
 export type AppointmentTreatment = {
   appointmentId: string;
   treatmentId: string;
-  quantity: number;
   price: number | null;
 };
 
