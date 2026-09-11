@@ -63,6 +63,29 @@ export type AppointmentWithClient = Appointment & {
   client: Client;
 };
 
+export type AppointmentListItem = {
+  id: string;
+  date: string;
+  time: string;
+  endTime: string;
+
+  client: {
+    id: string;
+    name: string;
+    phone: string;
+  };
+
+  doctor: {
+    id: string;
+    name: string;
+  } | null;
+
+  treatments: {
+    id: string;
+    name: string;
+  }[];
+};
+
 export type AppointmentFullInfo = Appointment & {
   client: Client;
   doctor: Doctor | null;

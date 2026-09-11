@@ -8,7 +8,7 @@ const appointmentsController = {
     const include = req.query.include;
 
     if (include === "client") {
-      const response = await appointmentsService.getAppointmentsWithClient();
+      const response = await appointmentsService.getAppointmentsForList();
       res.status(200).json(response);
       return;
     }

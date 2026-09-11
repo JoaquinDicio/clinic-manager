@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   CalendarDays,
   Clock3,
@@ -6,11 +7,15 @@ import {
   UserRound,
   Stethoscope,
   FileText,
+  Activity,
+  ChevronDown,
 } from "lucide-react";
+
 import { type AppointmentWithClient } from "../types/appointments";
 import { type AppointmentForm } from "../types/appointments";
 import useTemplates from "../hooks/useTemplates";
 import useDoctors from "../hooks/useDoctors.tsx";
+import useTreatments from "../hooks/useTreatments";
 import ClientAutocomplete from "./ClientAutocomplete";
 
 const INITIAL_FORM: AppointmentForm = {
@@ -21,6 +26,7 @@ const INITIAL_FORM: AppointmentForm = {
   doctorId: "",
   note: "",
   slots: 1,
+  treatmentIds: [],
 };
 
 interface Props {
@@ -33,8 +39,11 @@ interface Props {
 export default function NewAppointmentForm({ addAppointment, error }: Props) {
   const { templates, error: templatesError } = useTemplates();
   const { doctors, error: doctorsError } = useDoctors();
+  const { treatments, error: treatmentsError } = useTreatments();
+
   const [form, setForm] = useState(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
+  const [treatmentsOpen, setTreatmentsOpen] = useState(false);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -59,14 +68,25 @@ export default function NewAppointmentForm({ addAppointment, error }: Props) {
     }));
   };
 
+  function toggleTreatment(treatmentId: string) {
+    setForm((prev) => ({
+      ...prev,
+      treatmentIds: prev.treatmentIds.includes(treatmentId)
+        ? prev.treatmentIds.filter((id) => id !== treatmentId)
+        : [...prev.treatmentIds, treatmentId],
+    }));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     setLoading(true);
 
     const newAppointment = await addAppointment(form);
 
     if (newAppointment) {
       setForm(INITIAL_FORM);
+      setTreatmentsOpen(false);
     }
 
     setLoading(false);
@@ -78,6 +98,8 @@ export default function NewAppointmentForm({ addAppointment, error }: Props) {
       clientId,
     }));
   }
+
+  const activeTreatments = treatments.filter((treatment) => treatment.active);
 
   return (
     <form
@@ -133,6 +155,104 @@ export default function NewAppointmentForm({ addAppointment, error }: Props) {
 
           {templatesError && (
             <p className="mt-2 text-xs text-red-500">{doctorsError}</p>
+          )}
+        </div>
+
+        {/* Tratamientos */}
+        <div>
+          <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
+            <Activity className="h-4 w-4 text-gray-400" />
+            Tratamientos
+          </label>
+
+          <div className="relative">
+            {/* Selector */}
+            <button
+              type="button"
+              onClick={() => setTreatmentsOpen((prev) => !prev)}
+              className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-left text-sm text-gray-900 outline-none transition hover:bg-white focus:border-gray-400 focus:bg-white focus:ring-2 focus:ring-gray-100"
+            >
+              <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+                {form.treatmentIds.length === 0 ? (
+                  <span className="text-gray-400">
+                    Seleccioná uno o más tratamientos
+                  </span>
+                ) : (
+                  form.treatmentIds.map((treatmentId) => {
+                    const treatment = treatments.find(
+                      (treatment) => treatment.id === treatmentId,
+                    );
+
+                    if (!treatment) return null;
+
+                    return (
+                      <span
+                        key={treatment.id}
+                        className="rounded-md bg-gray-200 px-2 py-1 text-xs text-gray-700"
+                      >
+                        {treatment.name}
+                      </span>
+                    );
+                  })
+                )}
+              </div>
+
+              <ChevronDown
+                className={`ml-2 h-4 w-4 shrink-0 text-gray-400 transition-transform ${
+                  treatmentsOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {/* Opciones */}
+            {treatmentsOpen && (
+              <div className="absolute z-10 mt-2 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
+                {activeTreatments.length === 0 ? (
+                  <p className="px-3 py-2 text-sm text-gray-400">
+                    No hay tratamientos disponibles.
+                  </p>
+                ) : (
+                  activeTreatments.map((treatment) => {
+                    const selected = form.treatmentIds.includes(treatment.id);
+
+                    return (
+                      <label
+                        key={treatment.id}
+                        className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-gray-700 transition hover:bg-gray-50"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selected}
+                          onChange={() => toggleTreatment(treatment.id)}
+                          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-gray-900 focus:ring-gray-200"
+                        />
+
+                        <span className="flex-1">{treatment.name}</span>
+
+                        {treatment.price !== null && (
+                          <span className="text-xs text-gray-400">
+                            ${treatment.price}
+                          </span>
+                        )}
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
+
+          {form.treatmentIds.length > 0 && (
+            <p className="mt-2 text-xs text-gray-400">
+              {form.treatmentIds.length}{" "}
+              {form.treatmentIds.length === 1
+                ? "tratamiento seleccionado"
+                : "tratamientos seleccionados"}
+            </p>
+          )}
+
+          {treatmentsError && (
+            <p className="mt-2 text-xs text-red-500">{treatmentsError}</p>
           )}
         </div>
 
@@ -206,6 +326,7 @@ export default function NewAppointmentForm({ addAppointment, error }: Props) {
           </div>
         </div>
 
+        {/* Detalle */}
         <div>
           <label
             htmlFor="note"
