@@ -6,6 +6,8 @@ const titles: Record<string, string> = {
   "/appointments": "Appointments",
   "/templates": "Templates",
   "/schedules": "Schedules",
+  "/doctors": "Doctors",
+  "/treatments": "Treatments",
 };
 
 export default function Header() {

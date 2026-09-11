@@ -6,5 +6,6 @@ const treatmentsRouter = Router();
 treatmentsRouter.get("/", treatmentsController.getAll);
 treatmentsRouter.post("/", treatmentsController.create);
 treatmentsRouter.delete("/:id", treatmentsController.delete);
+treatmentsRouter.patch("/:id/deactivate", treatmentsController.deactivate);
 
 export default treatmentsRouter;

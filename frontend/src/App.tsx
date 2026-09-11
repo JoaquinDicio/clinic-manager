@@ -6,6 +6,8 @@ import Templates from "./pages/Templates";
 import Schedules from "./pages/Schedules";
 import AppLayout from "./layout/AppLayout";
 import Doctors from "./pages/Doctors";
+import Treatments from "./pages/Treatments";
+
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +19,7 @@ function App() {
           <Route path="/templates" element={<Templates />} />
           <Route path="/schedules" element={<Schedules />} />
           <Route path="/doctors" element={<Doctors />} />
+          <Route path="/treatments" element={<Treatments />} />
         </Route>
       </Routes>
     </BrowserRouter>

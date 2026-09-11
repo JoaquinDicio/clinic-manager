@@ -10,6 +10,7 @@ import appointmentsRouter from "./routes/appointments.routes.js";
 import schedulesRouter from "./routes/schedules.routes.js";
 import dashboardRouter from "./routes/dashboard.routes.js";
 import doctorsRouter from "./routes/doctors.routes.js";
+import treatmentsRouter from "./routes/treatments.routes.js";
 import cors from "cors";
 
 const app = express();
@@ -35,6 +36,7 @@ async function main() {
   app.use("/appointments", appointmentsRouter);
   app.use("/dashboard", dashboardRouter);
   app.use("/doctors", doctorsRouter);
+  app.use("/treatments", treatmentsRouter);
 
   startDispatcher();
 

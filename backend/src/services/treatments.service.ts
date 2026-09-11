@@ -67,6 +67,24 @@ const treatmentsService = {
       throw new AppError(404, "Treatment not found");
     }
   },
+
+  async deactivate(id: string) {
+    const result = await pool.query(
+      `
+      UPDATE treatments
+      SET active = false
+      WHERE id = $1
+      RETURNING *;
+    `,
+      [id],
+    );
+
+    if (result.rows.length === 0) {
+      throw new AppError(404, "Treatment not found");
+    }
+
+    return result.rows[0];
+  },
 };
 
 export default treatmentsService;

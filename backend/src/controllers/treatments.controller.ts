@@ -33,6 +33,15 @@ const treatmentsController = {
 
     res.status(204).send();
   },
+
+  async deactivate(req: Request, res: Response) {
+    const id = req.params.id;
+    if (typeof id !== "string" || !id.trim()) {
+      throw new AppError(400, `ID is mandatory to send this request.`);
+    }
+    const response = await treatmentsService.deactivate(id);
+    res.status(200).json(response);
+  },
 };
 
 export default treatmentsController;
