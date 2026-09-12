@@ -1,11 +1,12 @@
 import {
   type AppointmentForm,
-  type AppointmentWithClient,
+  type AppointmentListItem,
+  type AppointmentForList,
 } from "../types/appointments";
 
 const formatAppointment = (
-  appointment: AppointmentWithClient,
-): AppointmentWithClient => {
+  appointment: AppointmentForList,
+): AppointmentListItem => {
   const [hours, minutes] = appointment.time
     .toString()
     .slice(0, 5)
@@ -34,7 +35,7 @@ const formatAppointment = (
 
 export async function postAppointment(
   formData: AppointmentForm,
-): Promise<AppointmentWithClient> {
+): Promise<AppointmentListItem> {
   const response = await fetch("http://localhost:8080/appointments", {
     method: "POST",
     headers: {
@@ -52,14 +53,12 @@ export async function postAppointment(
   return formatAppointment(data);
 }
 
-export async function getAppointments(): Promise<AppointmentWithClient[]> {
-  const response = await fetch(
-    "http://localhost:8080/appointments?include=client",
-  );
+export async function getAppointments(): Promise<AppointmentListItem[]> {
+  const response = await fetch("http://localhost:8080/appointments?type=list");
 
   const data = await response.json();
 
-  return data.map((appointment: AppointmentWithClient) =>
+  return data.map((appointment: AppointmentForList) =>
     formatAppointment(appointment),
   );
 }

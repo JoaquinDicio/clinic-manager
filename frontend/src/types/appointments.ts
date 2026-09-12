@@ -23,25 +23,30 @@ export interface AppointmentWithClient extends Appointment {
   };
 }
 
-export type AppointmentListItem = {
+export type AppointmentForList = {
   id: string;
   date: string;
   time: string;
-  endTime: string;
-
+  slots: number;
+  reminder: boolean;
+  createdAt: string;
   client: {
     id: string;
     name: string;
     phone: string;
   };
-
   doctor: {
     id: string;
     name: string;
   } | null;
-
   treatments: {
     id: string;
     name: string;
   }[];
+};
+
+export type AppointmentListItem = AppointmentForList & {
+  formattedDate: string;
+  formattedTime: string;
+  formattedEndTime: string;
 };

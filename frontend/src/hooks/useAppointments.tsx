@@ -1,6 +1,6 @@
 import {
-  type AppointmentWithClient,
   type AppointmentForm,
+  type AppointmentListItem,
 } from "../types/appointments";
 import { useState, useEffect } from "react";
 import {
@@ -10,7 +10,7 @@ import {
 } from "../services/appointments.service";
 
 export default function useAppointments() {
-  const [appointments, setAppointments] = useState<AppointmentWithClient[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentListItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 

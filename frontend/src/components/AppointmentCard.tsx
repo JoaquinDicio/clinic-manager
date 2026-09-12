@@ -1,14 +1,8 @@
 import { Clock, UserRound, Stethoscope, Trash2 } from "lucide-react";
 import { type AppointmentListItem } from "../types/appointments";
 
-type FormattedAppointment = AppointmentListItem & {
-  formattedDate: string;
-  formattedTime: string;
-  formattedEndTime: string;
-};
-
 interface Props {
-  appointment: FormattedAppointment;
+  appointment: AppointmentListItem;
   onDelete?: (appointmentId: string) => Promise<void>;
 }
 
@@ -99,18 +93,21 @@ export default function AppointmentCard({ appointment, onDelete }: Props) {
       {/* Treatment */}
       <div className="mt-4 flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
         <Stethoscope className="h-4 w-4 text-gray-500" />
-
         <div>
-          {appointment.treatments.length === 0
-            ? "Sin tratamientos"
-            : appointment.treatments.map((treatment) => (
-                <span
-                  key={treatment.id}
-                  className="text-sm font-medium text-gray-700"
-                >
-                  {treatment.name}
-                </span>
-              ))}
+          {appointment.treatments.length === 0 ? (
+            <span className="text-sm font-medium text-gray-700">
+              Sin tratamientos asignados
+            </span>
+          ) : (
+            appointment.treatments?.map((treatment) => (
+              <span
+                key={treatment.id}
+                className="text-sm font-medium text-gray-700"
+              >
+                {treatment.name}
+              </span>
+            ))
+          )}
         </div>
       </div>
     </div>

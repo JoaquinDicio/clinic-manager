@@ -11,7 +11,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-import { type AppointmentWithClient } from "../types/appointments";
+import { type AppointmentListItem } from "../types/appointments";
 import { type AppointmentForm } from "../types/appointments";
 import useTemplates from "../hooks/useTemplates";
 import useDoctors from "../hooks/useDoctors.tsx";
@@ -32,7 +32,7 @@ const INITIAL_FORM: AppointmentForm = {
 interface Props {
   addAppointment: (
     appointment: AppointmentForm,
-  ) => Promise<AppointmentWithClient | undefined>;
+  ) => Promise<AppointmentListItem | undefined>;
   error: string | null;
 }
 

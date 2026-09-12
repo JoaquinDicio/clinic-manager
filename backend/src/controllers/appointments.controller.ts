@@ -5,9 +5,9 @@ import { CreateAppointmentSchema } from "../validators/appointment.validator.js"
 
 const appointmentsController = {
   async getAll(req: Request, res: Response) {
-    const include = req.query.include;
+    const type = req.query.type;
 
-    if (include === "client") {
+    if (type === "list") {
       const response = await appointmentsService.getAppointmentsForList();
       res.status(200).json(response);
       return;
