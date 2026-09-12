@@ -24,7 +24,6 @@ const dashboardService = {
     const todayAppointments = await pool.query(`
       SELECT
         a.id,
-        a.client_id AS "clientId",
         a.date,
         a.time,
         a.slots,
@@ -34,59 +33,52 @@ const dashboardService = {
         json_build_object(
           'id', c.id,
           'name', c.name,
-          'phone', c.phone,
-          'createdAt', c.created_at
-        ) AS client
+          'phone', c.phone
+        ) AS client,
+
+        CASE
+          WHEN d.id IS NOT NULL THEN
+            json_build_object(
+              'id', d.id,
+              'name', d.name
+            )
+          ELSE NULL
+        END AS doctor,
+
+        COALESCE(
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', t.id,
+                'name', t.name
+              )
+            )
+            FROM appointment_treatments at
+            INNER JOIN treatments t
+              ON t.id = at.treatment_id
+            WHERE at.appointment_id = a.id
+          ),
+          '[]'
+        ) AS treatments
 
       FROM appointments a
 
       INNER JOIN clients c
         ON c.id = a.client_id
 
+      LEFT JOIN doctors d
+        ON d.id = a.doctor_id
+
       WHERE a.date = CURRENT_DATE
 
       ORDER BY a.date ASC, a.time ASC
     `);
 
-    const appointments = todayAppointments.rows.map((appointment) => {
-      const [hours, minutes] = appointment.time
-        .toString()
-        .slice(0, 5)
-        .split(":")
-        .map(Number);
-
-      const startMinutes = hours * 60 + minutes;
-      const endMinutes = startMinutes + appointment.slots * 30;
-
-      const formattedTime = `${String(hours).padStart(2, "0")}:${String(
-        minutes,
-      ).padStart(2, "0")}`;
-
-      const formattedEndTime = `${String(
-        Math.floor(endMinutes / 60) % 24,
-      ).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
-
-      const date = new Date(appointment.date);
-
-      const formattedDate = date.toLocaleDateString("es-AR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-
-      return {
-        ...appointment,
-        formattedDate,
-        formattedTime,
-        formattedEndTime,
-      };
-    });
-
     return {
       appointmentsToday: Number(appointmentsToday.rows[0].count),
       pendingMessages: Number(pendingMessages.rows[0].count),
       sentToday: Number(sentToday.rows[0].count),
-      todayAppointments: appointments,
+      todayAppointments: todayAppointments.rows,
     };
   },
 };

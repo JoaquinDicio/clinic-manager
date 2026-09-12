@@ -2,18 +2,33 @@ import StatCard from "../components/StatCard";
 import { useState, useEffect } from "react";
 import type { DashboardData } from "../types/dashboard";
 import AppointmentCard from "../components/AppointmentCard";
+import formatAppointmentToList from "../utils/formatAppointmentToList";
+import { type AppointmentForList } from "../types/appointments";
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
     null,
   );
 
+  async function fetchDashboard() {
+    const response = await fetch("http://localhost:8080/dashboard");
+
+    const data = await response.json();
+
+    const formattedAppointments = data.todayAppointments.map(
+      (appointment: AppointmentForList) => formatAppointmentToList(appointment),
+    );
+
+    const formattedData = {
+      ...data,
+      todayAppointments: formattedAppointments,
+    };
+
+    setDashboardData(formattedData);
+  }
+
   useEffect(() => {
-    fetch("http://localhost:8080/dashboard")
-      .then((res) => res.json())
-      .then((data: DashboardData) => {
-        setDashboardData(data);
-      });
+    fetchDashboard();
   }, []);
 
   return (

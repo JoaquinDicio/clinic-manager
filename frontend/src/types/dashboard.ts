@@ -1,4 +1,7 @@
-import type { AppointmentWithClient } from "./appointments";
+import type {
+  AppointmentListItem,
+  AppointmentWithClient,
+} from "./appointments";
 
 export interface AppointmentDashboard extends AppointmentWithClient {
   formattedDate: string;
@@ -10,5 +13,5 @@ export type DashboardData = {
   appointmentsToday: number;
   pendingMessages: number;
   sentToday: number;
-  todayAppointments: AppointmentDashboard[];
+  todayAppointments: AppointmentListItem[];
 };
