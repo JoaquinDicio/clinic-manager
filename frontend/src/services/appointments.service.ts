@@ -21,15 +21,12 @@ export async function postAppointment(
   }
 
   const data = await response.json();
-
   return formatAppointmentToList(data);
 }
 
 export async function getAppointments(): Promise<AppointmentListItem[]> {
   const response = await fetch("http://localhost:8080/appointments?type=list");
-
   const data = await response.json();
-
   return data.map((appointment: AppointmentForList) =>
     formatAppointmentToList(appointment),
   );
