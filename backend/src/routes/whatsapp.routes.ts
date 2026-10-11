@@ -6,7 +6,5 @@ whatsappRouter.post('/', whatsappController.postWhatsapp)
 
 whatsappRouter.post('/bulk', whatsappController.postBulkWhatsapp)
 
-whatsappRouter.get('/contacts', whatsappController.getWhatsappContacts)
-
 
 export default whatsappRouter

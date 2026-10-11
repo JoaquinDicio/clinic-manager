@@ -1,5 +1,6 @@
 import express from "express";
 import whatsappRouter from "./routes/whatsapp.routes.js";
+import whatsappPublicRouter from "./routes/whatsappPublic.routes.js";
 import clientsRouter from "./routes/clients.routes.js";
 import { checkWhatsappReady } from "./middlewares/checkWhatsappReady.js";
 import { connectToWhatsapp } from "./config/whatsapp.js";
@@ -26,9 +27,10 @@ app.use(
 const PORT = process.env.PORT || 8080;
 
 async function main() {
-  app.use("/wpp", checkWhatsappReady, whatsappRouter);
+  // Públicas (sin checkWhatsappReady): estado y QR para el frontend.
+  app.use("/whatsapp", whatsappPublicRouter);
 
-  await connectToWhatsapp();
+  app.use("/wpp", checkWhatsappReady, whatsappRouter);
 
   app.use("/clients", clientsRouter);
   app.use("/templates", templatesRouter);
@@ -44,6 +46,12 @@ async function main() {
 
   app.listen(PORT, () => {
     console.log("App is launched at:", PORT);
+  });
+
+  // No bloquea el boot: el QR queda disponible en /whatsapp/qr
+  // mientras se espera el escaneo.
+  connectToWhatsapp().catch((err) => {
+    console.error("WhatsApp connection failed:", err);
   });
 }
 main();

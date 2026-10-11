@@ -18,13 +18,12 @@ const schedulesController = {
   },
 
   async create(req: Request, res: Response) {
-    const { templateId, sendAt, clientId, variables }: CreateScheduleDTO =
-      req.body;
+    const { templateId, sendAt, clientId, body }: CreateScheduleDTO = req.body;
 
-    if (!templateId?.trim() || !sendAt?.trim() || !clientId?.trim()) {
+    if (!templateId?.trim() || !sendAt?.trim() || !clientId?.trim() || !body?.trim()) {
       throw new AppError(
         400,
-        "templateId, sendAt and clientId are required fields",
+        "templateId, sendAt, clientId and body are required fields",
       );
     }
 
@@ -32,7 +31,7 @@ const schedulesController = {
       templateId,
       sendAt,
       clientId,
-      variables,
+      body,
     });
 
     res.status(201).json(response);

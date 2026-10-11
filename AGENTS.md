@@ -19,8 +19,9 @@ DB local Postgres: `DB_HOST=localhost DB_USER=postgres DB_PASSWORD=1234 DB_NAME=
 backend/src/
   main.ts (monta routers, conecta WhatsApp, inicia dispatcher)
   routes/ controllers/ services/ validators/ middlewares/
+  routes/whatsappPublic.routes.ts (GET /whatsapp/status, /whatsapp/qr y /whatsapp/events SSE, SIN guard)
   jobs/dispatcher.ts (node-cron, envía schedules pendientes)
-  config/whatsapp.ts (whatsapp-web.js + qrcode-terminal)
+  config/whatsapp.ts (Baileys: socket WS, auth en baileys_auth/, QR + estado por eventos)
   db/connection.ts (pg Pool) + db.ts (SOLO types TS) + db/init.sql (schema + seed)
 frontend/src/
   pages/ (Dashboard, Clients, Appointments, Templates, Schedules, Doctors, Treatments)
@@ -48,6 +49,7 @@ Backend:
 
 Frontend:
 - `services/` hace `fetch` + `response.json()`, `hooks/useX.tsx` maneja estado. No agregar Axios/React Query sin consultar.
+- Estado WhatsApp: `WhatsappStatusProvider` (SSE `GET /whatsapp/events`, sin polling) + `useWhatsappStatus` (`{connected, qr}`). `RequireWhatsapp` redirige a `/whatsapp` si desconectado; página `Whatsapp.tsx` muestra el QR que llega por push. Badge en `Header`.
 - Routing bajo `<Route element={<AppLayout/>}>` en `App.tsx`. Nuevas pages van ahí + link en `components/Sidebar.tsx`.
 - Estilos con Tailwind v4 (`@tailwindcss/vite`), iconos con `lucide-react`. Formularios siguen patrón `New*Form.tsx` + `ModalContainer`.
 - URLs API hardcodeadas a `http://localhost:8080` hoy — mantener hasta centralizar en env/cliente común.

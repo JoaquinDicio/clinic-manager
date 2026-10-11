@@ -30,15 +30,20 @@ const whatsappController = {
         res.status(200).json(response)
     },
 
-    async getWhatsappContacts(req: Request, res: Response) {
-
-        const response = await whatsappService.getContacts()
-
-        if (!response.ok) {
-            throw new AppError(500, "Error getting contacts info.")
-        }
+    async getStatus(req: Request, res: Response) {
+        const response = await whatsappService.getStatus()
 
         res.status(200).json(response)
+    },
+
+    async getQr(req: Request, res: Response) {
+        const qrDataUrl = await whatsappService.getQrDataUrl()
+
+        res.status(200).json({ qr: qrDataUrl })
+    },
+
+    async getEvents(req: Request, res: Response) {
+        whatsappService.streamEvents(res)
     }
 }
 

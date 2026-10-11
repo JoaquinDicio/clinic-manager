@@ -7,21 +7,33 @@ import Schedules from "./pages/Schedules";
 import AppLayout from "./layout/AppLayout";
 import Doctors from "./pages/Doctors";
 import Treatments from "./pages/Treatments";
+import Whatsapp from "./pages/Whatsapp";
+import RequireWhatsapp from "./components/RequireWhatsapp";
+import { WhatsappStatusProvider } from "./components/WhatsappStatusProvider";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/clients" element={<Clients />} />
-          <Route path="/appointments" element={<Appointments />} />
-          <Route path="/templates" element={<Templates />} />
-          <Route path="/schedules" element={<Schedules />} />
-          <Route path="/doctors" element={<Doctors />} />
-          <Route path="/treatments" element={<Treatments />} />
-        </Route>
-      </Routes>
+      <WhatsappStatusProvider>
+        <Routes>
+          <Route path="/whatsapp" element={<Whatsapp />} />
+          <Route
+            element={
+              <RequireWhatsapp>
+                <AppLayout />
+              </RequireWhatsapp>
+            }
+          >
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/appointments" element={<Appointments />} />
+            <Route path="/templates" element={<Templates />} />
+            <Route path="/schedules" element={<Schedules />} />
+            <Route path="/doctors" element={<Doctors />} />
+            <Route path="/treatments" element={<Treatments />} />
+          </Route>
+        </Routes>
+      </WhatsappStatusProvider>
     </BrowserRouter>
   );
 }

@@ -1,5 +1,12 @@
-import client from "../config/whatsapp.js";
+import {
+  getSocket,
+  isWhatsappConnected,
+  getLastQr,
+  subscribeWhatsappEvents,
+} from "../config/whatsapp.js";
 import { Message, SendResult } from "../types/whatsapp.types.js";
+import QRCode from "qrcode";
+import type { Response } from "express";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms)); // we use this to avoid being blocked or banned
 
@@ -9,14 +16,21 @@ const whatsappService = {
     message: string,
     scheduleId?: string,
   ): Promise<SendResult> {
-    const id = await client.getNumberId(phone);
+    const sock = getSocket();
 
-    if (!id) {
+    if (!sock || !isWhatsappConnected) {
+      throw new Error("WhatsApp no está conectado");
+    }
+
+    const result = await sock.onWhatsApp(phone);
+    const resolved = result?.[0];
+
+    if (!resolved?.exists) {
       throw new Error("No se pudo resolver el número");
     }
 
     try {
-      await client.sendMessage(id._serialized, message);
+      await sock.sendMessage(resolved.jid, { text: message });
 
       return {
         phone,
@@ -58,22 +72,20 @@ const whatsappService = {
     return results;
   },
 
-  async getContacts() {
-    try {
-      const contacts = await client.getContacts();
+  async getStatus(): Promise<{ connected: boolean }> {
+    return { connected: isWhatsappConnected };
+  },
 
-      const filtered = contacts.filter(
-        (c) =>
-          c.isMyContact && // solo los de tu agenda
-          c.name?.trim() !== "", // que tengan nombre
-      );
+  async getQrDataUrl(): Promise<string | null> {
+    const qr = getLastQr();
 
-      return { ok: true, filtered };
-    } catch (error) {
-      console.log(error);
+    if (!qr) return null;
 
-      return { ok: false, error: "Error trying to get Contacts" };
-    }
+    return QRCode.toDataURL(qr);
+  },
+
+  streamEvents(res: Response): void {
+    subscribeWhatsappEvents(res);
   },
 };
 
