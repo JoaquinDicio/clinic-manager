@@ -22,6 +22,36 @@ export function getSocket(): WASocket | null {
   return sock;
 }
 
+/* Espera entre reintentos: reconectar en caliente genera tormentas
+ * de conflict/replaced contra el servidor. */
+const RECONNECT_DELAY_MS = 5000;
+
+let connecting = false;
+let stopped = false;
+let reconnectTimer: NodeJS.Timeout | null = null;
+
+function clearReconnectTimer() {
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+}
+
+function cleanupSocket() {
+  clearReconnectTimer();
+
+  if (sock) {
+    try {
+      sock.ev.removeAllListeners("creds.update");
+      sock.ev.removeAllListeners("connection.update");
+      sock.ws.close();
+    } catch {
+      // El socket ya estaba muerto: solo evitamos fugas.
+    }
+    sock = null;
+  }
+}
+
 /* --- SSE: push de estado/QR al frontend (sin polling) --- */
 
 const eventClients = new Set<Response>();
@@ -67,7 +97,13 @@ export function subscribeWhatsappEvents(res: Response) {
 }
 
 function startSocket(onOpen: () => void, onLoggedOut: (err: Error) => void) {
+  // Guarda: un solo intento de conexión a la vez. Sin esto, múltiples
+  // eventos 'close' crean sockets paralelos que se patean entre sí.
+  if (connecting || stopped) return;
+  connecting = true;
+
   useMultiFileAuthState("./baileys_auth").then(({ state, saveCreds }) => {
+    cleanupSocket();
     sock = makeWASocket({ auth: state });
 
     sock.ev.on("creds.update", saveCreds);
@@ -84,6 +120,7 @@ function startSocket(onOpen: () => void, onLoggedOut: (err: Error) => void) {
 
       if (connection === "open") {
         console.log("WhatsApp is connected!");
+        connecting = false;
         isWhatsappConnected = true;
         lastQr = null;
         broadcastStatus();
@@ -92,6 +129,7 @@ function startSocket(onOpen: () => void, onLoggedOut: (err: Error) => void) {
       }
 
       if (connection === "close") {
+        connecting = false;
         isWhatsappConnected = false;
         lastQr = null;
         broadcastStatus();
@@ -102,22 +140,36 @@ function startSocket(onOpen: () => void, onLoggedOut: (err: Error) => void) {
         const loggedOut = statusCode === DisconnectReason.loggedOut;
 
         console.log(
-          "WhatsApp disconnected. Logged out:",
+          "WhatsApp disconnected. Status:",
+          statusCode,
+          "Logged out:",
           loggedOut,
-          "Reconnecting:",
-          !loggedOut,
         );
 
-        if (loggedOut) {
-          sock = null;
+        if (loggedOut || stopped) {
+          cleanupSocket();
           initialized = false;
+          stopped = true;
           onLoggedOut(new Error("Sesión cerrada desde el teléfono"));
-        } else {
-          // Reconexión automática (caídas de red, reinicios de WA, etc.)
-          startSocket(onOpen, onLoggedOut);
+        } else if (!reconnectTimer) {
+          // Un solo reintento programado, con delay anti-tormenta.
+          console.log(`Reconnecting in ${RECONNECT_DELAY_MS}ms...`);
+          reconnectTimer = setTimeout(() => {
+            reconnectTimer = null;
+            startSocket(onOpen, onLoggedOut);
+          }, RECONNECT_DELAY_MS);
         }
       }
     });
+  }).catch((err) => {
+    console.error("WhatsApp socket init failed, retrying:", err);
+    connecting = false;
+    if (!reconnectTimer && !stopped) {
+      reconnectTimer = setTimeout(() => {
+        reconnectTimer = null;
+        startSocket(onOpen, onLoggedOut);
+      }, RECONNECT_DELAY_MS);
+    }
   });
 }
 
