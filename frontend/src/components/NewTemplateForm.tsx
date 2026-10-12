@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText, MessageSquare } from "lucide-react";
 
 import { extractVariables } from "../utils/templates";
+import { getTemplateVariables, type TemplateVariable } from "../services/templates.service";
 import { type TemplateForm } from "../types/templates";
 
 interface Props {
@@ -17,6 +18,15 @@ const INITIAL_FORM: TemplateForm = {
 export default function NewTemplateForm({ addTemplate, error }: Props) {
   const [posting, setPosting] = useState(false);
   const [form, setForm] = useState<TemplateForm>(INITIAL_FORM);
+  const [availableVariables, setAvailableVariables] = useState<
+    TemplateVariable[]
+  >([]);
+
+  useEffect(() => {
+    getTemplateVariables()
+      .then(setAvailableVariables)
+      .catch(() => setAvailableVariables([]));
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -106,6 +116,20 @@ export default function NewTemplateForm({ addTemplate, error }: Props) {
             <span className="font-medium text-gray-500">{"{{date}}"}</span> o{" "}
             <span className="font-medium text-gray-500">{"{{time}}"}</span>.
           </p>
+
+          {availableVariables.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {availableVariables.map((variable) => (
+                <span
+                  key={variable.key}
+                  title={variable.description}
+                  className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs text-gray-600"
+                >
+                  {"{{" + variable.key + "}}"}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Error */}

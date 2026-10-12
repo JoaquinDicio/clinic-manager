@@ -24,3 +24,7 @@ export const CreateAppointmentSchema = z.object({
 });
 
 export type CreateAppointmentDTO = z.infer<typeof CreateAppointmentSchema>;
+
+export const UpdateAppointmentSchema = CreateAppointmentSchema.partial();
+
+export type UpdateAppointmentDTO = z.infer<typeof UpdateAppointmentSchema>;

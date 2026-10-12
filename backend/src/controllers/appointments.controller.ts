@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import { AppError } from "../middlewares/errorMiddleware.js";
 import appointmentsService from "../services/appointments.service.js";
-import { CreateAppointmentSchema } from "../validators/appointment.validator.js";
+import {
+  CreateAppointmentSchema,
+  UpdateAppointmentSchema,
+} from "../validators/appointment.validator.js";
 
 const appointmentsController = {
   async getAll(req: Request, res: Response) {
@@ -28,6 +31,24 @@ const appointmentsController = {
     const response = await appointmentsService.create({ ...result.data });
 
     res.status(201).json(response);
+  },
+
+  async update(req: Request, res: Response) {
+    const result = UpdateAppointmentSchema.safeParse(req.body);
+
+    if (!result.success) {
+      throw new AppError(400, result.error.issues[0].message);
+    }
+
+    const id = req.params.id;
+
+    if (typeof id !== "string" || !id.trim()) {
+      throw new AppError(400, `ID is mandatory to send this request.`);
+    }
+
+    const response = await appointmentsService.update({ ...result.data }, id);
+
+    res.status(200).json(response);
   },
 
   async delete(req: Request, res: Response) {

@@ -10,6 +10,11 @@ const templatesController = {
         res.status(200).json(templates)
     },
 
+    async getVariables(req: Request, res: Response) {
+        const variables = await templatesService.getVariables()
+        res.status(200).json(variables)
+    },
+
     async create(req: Request, res: Response) {
         const result = CreateTemplateSchema.safeParse(req.body);
 

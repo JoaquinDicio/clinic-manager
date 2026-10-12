@@ -2,6 +2,9 @@ import { Schedule } from "../db/db.js";
 import { CreateScheduleDTO } from "../validators/schedule.validator.js";
 import { AppError } from "../middlewares/errorMiddleware.js";
 import { pool } from "../db/connection.js";
+import type { Pool, PoolClient } from "pg";
+
+type Db = Pool | PoolClient;
 
 const schedulesService = {
   async getAll(): Promise<Schedule[]> {
@@ -24,8 +27,8 @@ const schedulesService = {
     return result.rows;
   },
 
-  async create(data: CreateScheduleDTO): Promise<Schedule> {
-    const template = await pool.query(
+  async create(data: CreateScheduleDTO, db: Db = pool): Promise<Schedule> {
+    const template = await db.query(
       `SELECT id FROM templates WHERE id = $1`,
       [data.templateId],
     );
@@ -34,7 +37,7 @@ const schedulesService = {
       throw new AppError(404, "Template not found");
     }
 
-    const client = await pool.query(`SELECT id FROM clients WHERE id = $1`, [
+    const client = await db.query(`SELECT id FROM clients WHERE id = $1`, [
       data.clientId,
     ]);
 
@@ -42,7 +45,7 @@ const schedulesService = {
       throw new AppError(404, `Client ${data.clientId} not found`);
     }
 
-    const result = await pool.query(
+    const result = await db.query(
       `
       INSERT INTO schedules (
         client_id,
@@ -66,6 +69,16 @@ const schedulesService = {
     );
 
     return result.rows[0];
+  },
+
+  async deletePendingForAppointment(
+    appointmentId: string,
+    db: Db = pool,
+  ): Promise<void> {
+    await db.query(
+      `DELETE FROM schedules WHERE appointment_id = $1 AND status = 'pending'`,
+      [appointmentId],
+    );
   },
 
   async delete(id: string): Promise<void> {

@@ -19,6 +19,21 @@ export async function getTemplates(): Promise<Response> {
   });
 }
 
+export interface TemplateVariable {
+  key: string;
+  description: string;
+}
+
+export async function getTemplateVariables(): Promise<TemplateVariable[]> {
+  const response = await fetch("http://localhost:8080/templates/variables");
+
+  if (!response.ok) {
+    throw new Error("Error fetching template variables");
+  }
+
+  return response.json();
+}
+
 export async function deleteTemplate(templateId: string): Promise<Response> {
   return await fetch(`http://localhost:8080/templates/${templateId}`, {
     method: "DELETE",

@@ -5,6 +5,8 @@ const templatesRouter = Router()
 
 templatesRouter.get("/", templatesController.getAll)
 
+templatesRouter.get("/variables", templatesController.getVariables)
+
 templatesRouter.post("/", templatesController.create)
 
 templatesRouter.put("/:id", templatesController.update)

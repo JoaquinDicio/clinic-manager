@@ -46,6 +46,7 @@ Backend:
 - Errores: lanzar `AppError(statusCode, msg)` desde services, cierra con `errorMiddleware` al final de `main.ts`.
 - SQL: `pg` con parámetros `$1`, mapear `snake_case` → `camelCase` con alias (`client_id AS "clientId"`, `created_at AS "createdAt"`). Para objetos anidados usar `json_build_object` + `json_agg` + `COALESCE(..., '[]')` (ver `services/appointments.service.ts`).
 - Nombres de tablas/columnas en inglés snake_case, respuestas JSON en camelCase.
+- Variables de templates: fuente de verdad `utils/templateData.ts` (`buildTemplateData` + hint `GET /templates/variables`). Agregar un campo = una línea en el builder.
 
 Frontend:
 - `services/` hace `fetch` + `response.json()`, `hooks/useX.tsx` maneja estado. No agregar Axios/React Query sin consultar.

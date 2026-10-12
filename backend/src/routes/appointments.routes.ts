@@ -7,7 +7,7 @@ appointmentsRouter.get("/", appointmentsController.getAll);
 
 appointmentsRouter.post("/", appointmentsController.create);
 
-appointmentsRouter.put("/:id", appointmentsController.create);
+appointmentsRouter.put("/:id", appointmentsController.update);
 
 appointmentsRouter.delete("/:id", appointmentsController.delete);
 

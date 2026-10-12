@@ -1,5 +1,6 @@
 import { AppError } from "../middlewares/errorMiddleware.js"
 import { pool } from "../db/connection.js"
+import { getAvailableTemplateVariables } from "../utils/templateData.js"
 
 export interface Template {
     id: string
@@ -16,6 +17,10 @@ export interface TemplateDTO {
 }
 
 const templatesService = {
+
+    async getVariables() {
+        return getAvailableTemplateVariables()
+    },
 
     async getAll(): Promise<Template[]> {
 
