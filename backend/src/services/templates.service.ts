@@ -6,14 +6,12 @@ export interface Template {
     id: string
     name: string
     body: string
-    variables: string[]
     created_at: Date
 }
 
 export interface TemplateDTO {
     name: string
     body: string
-    variables?: string[]
 }
 
 const templatesService = {
@@ -33,7 +31,7 @@ const templatesService = {
 
     async create(data: TemplateDTO): Promise<Template> {
 
-        const result = await pool.query(`INSERT INTO templates (name, body, variables) VALUES ($1, $2, $3) RETURNING *`, [data.name, data.body, data.variables ?? []])
+        const result = await pool.query(`INSERT INTO templates (name, body) VALUES ($1, $2) RETURNING *`, [data.name, data.body])
 
         return result.rows[0]
     },
@@ -44,14 +42,12 @@ const templatesService = {
             `UPDATE templates
             SET
                 name = COALESCE($1, name),
-                body = COALESCE($2, body),
-                variables = COALESCE($3, variables)
-            WHERE id = $4
+                body = COALESCE($2, body)
+            WHERE id = $3
             RETURNING *`,
             [
                 newData.name,
                 newData.body,
-                newData.variables ?? [],
                 id
             ]
         )

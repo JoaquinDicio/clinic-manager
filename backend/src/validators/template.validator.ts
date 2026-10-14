@@ -9,9 +9,6 @@ export const CreateTemplateSchema = z.object({
         .string()
         .trim()
         .min(1, "Body field is mandatory"),
-    variables: z
-        .array(z.string())
-        .optional()
 });
 
 export type CreateTemplateDTO =

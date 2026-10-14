@@ -25,7 +25,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE clients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
-    phone TEXT NOT NULL,
+    phone TEXT NOT NULL UNIQUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -34,7 +34,6 @@ CREATE TABLE templates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     body TEXT NOT NULL,
-    variables TEXT[],
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -106,7 +105,7 @@ CREATE TABLE schedules (
 
     appointment_id UUID
         REFERENCES appointments(id)
-        ON DELETE SET NULL,
+        ON DELETE CASCADE,
 
     template_id UUID
         REFERENCES templates(id)
@@ -255,24 +254,20 @@ VALUES
 
 INSERT INTO templates (
     name,
-    body,
-    variables
+    body
 )
 VALUES
     (
         'Recordatorio de turno',
-        'Hola {{name}}, te recordamos que tenés un turno el {{date}} a las {{time}}.',
-        ARRAY['name', 'date', 'time']
+        'Hola {{name}}, te recordamos que tenés un turno el {{date}} a las {{time}}.'
     ),
     (
         'Confirmación de turno',
-        'Hola {{name}}, tu turno quedó confirmado para el {{date}} a las {{time}}.',
-        ARRAY['name', 'date', 'time']
+        'Hola {{name}}, tu turno quedó confirmado para el {{date}} a las {{time}}.'
     ),
     (
         'Turno mañana',
-        'Hola {{name}}, te recordamos que mañana tenés un turno a las {{time}}.',
-        ARRAY['name', 'time']
+        'Hola {{name}}, te recordamos que mañana tenés un turno a las {{time}}.'
     );
 
 

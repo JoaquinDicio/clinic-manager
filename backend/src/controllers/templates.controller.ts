@@ -28,9 +28,9 @@ const templatesController = {
 
     async update(req: Request, res: Response) {
         const id = req.params.id as string
-        const { name, body, variables }: CreateTemplateDTO = req.body
+        const { name, body }: CreateTemplateDTO = req.body
 
-        const response = await templatesService.update({ name, body, variables }, id)
+        const response = await templatesService.update({ name, body }, id)
         res.status(200).json(response)
     },
 

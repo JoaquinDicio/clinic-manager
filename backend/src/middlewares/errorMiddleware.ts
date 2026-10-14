@@ -20,6 +20,20 @@ export default function errorMiddleware(
     return res.status(err.statusCode).json({ message: err.message, ok: false });
   }
 
+  if (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    (err as { code: unknown }).code === "23505"
+  ) {
+    const constraint =
+      "constraint" in err ? String((err as { constraint: unknown }).constraint) : "";
+    console.log(err);
+    return res
+      .status(409)
+      .json({ message: `Valor duplicado (${constraint})`, ok: false });
+  }
+
   if (err instanceof Error) {
     console.log(err);
     return res.status(500).json({ error: err.message });

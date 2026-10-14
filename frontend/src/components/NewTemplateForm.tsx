@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { FileText, MessageSquare } from "lucide-react";
 
-import { extractVariables } from "../utils/templates";
 import { getTemplateVariables, type TemplateVariable } from "../services/templates.service";
 import { type TemplateForm } from "../types/templates";
 
@@ -43,7 +42,6 @@ export default function NewTemplateForm({ addTemplate, error }: Props) {
 
     const formData = {
       ...form,
-      variables: extractVariables(form.body),
     };
 
     const template = await addTemplate(formData);
